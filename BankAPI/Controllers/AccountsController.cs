@@ -1,0 +1,212 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using BankCore;
+using BankCore.Models;
+using BankCore.Services;
+using Microsoft.AspNetCore.Authorization;
+using BankCore.Dtos;
+using System.Threading;
+
+namespace BankAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AccountsController : ControllerBase
+    {
+
+        private readonly IAccountService accountService;
+
+        public AccountsController(IAccountService accountService)
+        {
+            this.accountService = accountService;
+        }
+
+
+        [AllowAnonymous]
+        [HttpPost("register/client")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> RegisterClient([FromBody] CreateAccountDto createAccountDto,
+           CancellationToken cancellationToken = default)
+        {
+            var success = await accountService.CreateClientAccount(createAccountDto, cancellationToken);
+         
+            if (!success)
+            {
+                return UnprocessableEntity("ERROR, Account cannot be created");
+            }
+
+            var token = accountService.GenerateJwt(createAccountDto.AccountDto);
+            return Ok(new { token });
+        }
+
+
+        [AllowAnonymous]
+        [HttpPost("register/admin")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> RegisterAdmin([FromBody] CreateAccountDto createAccountDto,
+          CancellationToken cancellationToken = default)
+        {
+            var success = await accountService.CreateAdminAccount(createAccountDto, cancellationToken);
+
+            if (!success)
+            {
+                return UnprocessableEntity("ERROR, Account cannot be created");
+            }
+
+            var token = accountService.GenerateJwt(createAccountDto.AccountDto);
+            return Ok(new { token });
+        }
+
+
+        //[AllowAnonymous]
+        [HttpPost("authorize/client")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> AuthorizeClient([FromBody] AccountDto accountDto, 
+            CancellationToken cancellationToken = default)
+        {
+            var success = await accountService.VerifyClientPassword(accountDto, cancellationToken);
+            if (!success)
+            {
+                return Unauthorized("Unauthorized access!");
+            }
+
+            var token = accountService.GenerateJwt(accountDto);
+            return Ok(new { token });
+        }
+
+        //[AllowAnonymous]
+        [HttpPost("authorize/admin")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> AuthorizeAdmin([FromBody] AccountDto accountDto,
+           CancellationToken cancellationToken = default)
+        {
+            var success = await accountService.VerifyAdminPassword(accountDto, cancellationToken);
+            if (!success)
+            {
+                return Unauthorized("Unauthorized access!");
+            }
+
+            var token = accountService.GenerateJwt(accountDto);
+            return Ok(new { token });
+        }
+
+        //[AllowAnonymous] 
+        [HttpPut("modify")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> ModifyAccount(CreateAccountDto modifyAccountDto, 
+            CancellationToken cancellationToken = default)
+        {
+            var success = await accountService.ModifyAccount(modifyAccountDto, cancellationToken);
+            if (!success)
+            {
+                return UnprocessableEntity("Failed to modify account");
+            }
+
+            return NoContent();
+        }
+
+       // [AllowAnonymous] 
+        [HttpPut("change")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> ChangePassword(AccountDto accountDto,
+           CancellationToken cancellationToken = default)
+        {
+            var success = await accountService.ChangePassword(accountDto, cancellationToken);
+            if (!success)
+            {
+                return UnprocessableEntity("Failed to change password");
+            }
+
+            return NoContent();
+        }
+
+        //[AllowAnonymous]
+        [HttpPut("block")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> BlockAccount(string login,
+          CancellationToken cancellationToken = default)
+        {
+            var success = await accountService.BlockAccount(login, cancellationToken);
+            if (!success)
+            {
+                return UnprocessableEntity("Failed to block an account");
+            }
+
+            return NoContent();
+        }
+
+        [HttpPut("unblock")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> UnblockAccount(string login,
+         CancellationToken cancellationToken = default)
+        {
+            var success = await accountService.UnblockAccount(login, cancellationToken);
+            if (!success)
+            {
+                return UnprocessableEntity("Failed to block an account");
+            }
+
+            return NoContent();
+        }
+
+        /* //[AllowAnonymous]
+         [HttpGet("{login}")]
+         [ProducesResponseType(typeof(AccountDto), StatusCodes.Status200OK)]
+         [ProducesResponseType(StatusCodes.Status404NotFound)]
+         public async Task<ActionResult<AccountDto>> GetAccount(string login,
+             CancellationToken cancellationToken = default)
+         {
+             var result = await accountService.GetAccount(login, cancellationToken);
+
+             if (result == null)
+             {
+                 return NotFound();
+             }
+             else if (result is string)
+             {
+                 return Unauthorized(result);
+             }
+             return Ok(result);
+         }*/
+
+        // DELETE: api/Accounts/5
+        //[AllowAnonymous]
+        [HttpDelete("{login}")]
+        public async Task<IActionResult> DeleteAccount(string login, CancellationToken cancellationToken)
+        {
+            var account = await accountService.DeleteAccount(login, cancellationToken);
+            if (account == null)
+            {
+                return NotFound();
+            }
+
+            //_context.Accounts.Remove(account);
+            if (account is string)
+            {
+                return Unauthorized(account);
+            }
+            else
+            {
+                return (bool)account ? (IActionResult)NoContent() : NotFound();
+            }
+        }
+
+        /*private bool AccountExists(int id)
+        {
+            return _context.Accounts.Any(e => e.id_account == id);
+        }*/
+    }
+}
