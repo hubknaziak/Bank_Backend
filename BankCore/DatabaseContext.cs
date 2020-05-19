@@ -11,6 +11,14 @@ namespace BankCore
 
         public DbSet<Administrator> Administrators { get; set; }
 
+        public DbSet<Bank_Account> Bank_Accounts { get; set; }
+
+        public DbSet<Transfer> Transfers  { get; set; }
+
+        public DbSet<Loan_Application> Loan_Applications { get; set; }
+
+        public DbSet<Loan> Loans { get; set; }
+
         public DatabaseContext(DbContextOptions<DatabaseContext> options)
             : base(options) 
         { 

@@ -16,5 +16,9 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.5.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BankCore\BankCore.csproj" />
+  </ItemGroup>
+
 
 </Project>

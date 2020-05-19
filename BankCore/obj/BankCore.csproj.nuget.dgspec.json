@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\huber\\Desktop\\BANK\\BankCore\\BankCore.csproj": {}
+    "C:\\Users\\huber\\Desktop\\Bank_Backend\\BankCore\\BankCore.csproj": {}
   },
   "projects": {
-    "C:\\Users\\huber\\Desktop\\BANK\\BankCore\\BankCore.csproj": {
+    "C:\\Users\\huber\\Desktop\\Bank_Backend\\BankCore\\BankCore.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\huber\\Desktop\\BANK\\BankCore\\BankCore.csproj",
+        "projectUniqueName": "C:\\Users\\huber\\Desktop\\Bank_Backend\\BankCore\\BankCore.csproj",
         "projectName": "BankCore",
-        "projectPath": "C:\\Users\\huber\\Desktop\\BANK\\BankCore\\BankCore.csproj",
+        "projectPath": "C:\\Users\\huber\\Desktop\\Bank_Backend\\BankCore\\BankCore.csproj",
         "packagesPath": "C:\\Users\\huber\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\huber\\Desktop\\BANK\\BankCore\\obj\\",
+        "outputPath": "C:\\Users\\huber\\Desktop\\Bank_Backend\\BankCore\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\huber\\AppData\\Roaming\\NuGet\\NuGet.Config",

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "MV4sIFXwV8/xiekX8POtSaSTUPPLydU9yN+h8cKE6ugFgzDgW9zwoPhz9cknoKP15I3xXLbcU2qn5M8/woFW3g==",
+  "dgSpecHash": "9Cg+VKNgiZbfJUgWasYzbWNKEPGYNGR7A+n3TD1eFgpa+zgNkIKCUx1NqyGhgdgjZ4SCjvT8jdJWeowaAdpMhg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\huber\\Desktop\\BANK\\BankCore\\BankCore.csproj",
+  "projectFilePath": "C:\\Users\\huber\\Desktop\\Bank_Backend\\BankCore\\BankCore.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\huber\\.nuget\\packages\\cryptohelper\\3.0.2\\cryptohelper.3.0.2.nupkg.sha512",
     "C:\\Users\\huber\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\3.1.4\\microsoft.aspnetcore.authentication.jwtbearer.3.1.4.nupkg.sha512",
