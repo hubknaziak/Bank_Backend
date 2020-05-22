@@ -75,9 +75,8 @@ namespace BankCore.Migrations
                     b.Property<int>("Client")
                         .HasColumnType("int");
 
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                    b.Property<int>("Currency")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Openinig_Date")
                         .HasColumnType("datetime(6)");
@@ -115,6 +114,25 @@ namespace BankCore.Migrations
                     b.HasKey("Id_Client");
 
                     b.ToTable("Clients");
+                });
+
+            modelBuilder.Entity("BankCore.Models.Currency", b =>
+                {
+                    b.Property<int>("Id_Currency")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Exchange_Rate")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("varchar(20) CHARACTER SET utf8mb4")
+                        .HasMaxLength(20);
+
+                    b.HasKey("Id_Currency");
+
+                    b.ToTable("Currencies");
                 });
 
             modelBuilder.Entity("BankCore.Models.Loan", b =>

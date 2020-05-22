@@ -19,6 +19,8 @@ namespace BankCore
 
         public DbSet<Loan> Loans { get; set; }
 
+        public DbSet<Currency> Currencies { get; set; }
+
         public DatabaseContext(DbContextOptions<DatabaseContext> options)
             : base(options) 
         { 
