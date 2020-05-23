@@ -158,8 +158,6 @@ C:\Users\huber\Desktop\PSIM\BankAPI\bin\Debug\netcoreapp3.1\System.IdentityModel
 C:\Users\huber\Desktop\PSIM\BankAPI\obj\Debug\netcoreapp3.1\BankAPI.csproj.CoreCompileInputs.cache
 C:\Users\huber\Desktop\PSIM\BankAPI\obj\Debug\netcoreapp3.1\BankAPI.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\huber\Desktop\Bank_Backend\BankAPI\obj\Debug\netcoreapp3.1\BankAPI.csprojAssemblyReference.cache
-C:\Users\huber\Desktop\Bank_Backend\BankAPI\obj\Debug\netcoreapp3.1\BankAPI.csproj.CoreCompileInputs.cache
-C:\Users\huber\Desktop\Bank_Backend\BankAPI\obj\Debug\netcoreapp3.1\BankAPI.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\huber\Desktop\Bank_Backend\BankAPI\obj\Debug\netcoreapp3.1\BankAPI.AssemblyInfoInputs.cache
 C:\Users\huber\Desktop\Bank_Backend\BankAPI\obj\Debug\netcoreapp3.1\BankAPI.AssemblyInfo.cs
 C:\Users\huber\Desktop\Bank_Backend\BankAPI\obj\Debug\netcoreapp3.1\BankAPI.dll
@@ -316,3 +314,10 @@ C:\Users\huber\Desktop\Bank_Backend\BankAPI\obj\Debug\netcoreapp3.1\BankAPI.cspr
 C:\Users\huber\Desktop\Bank_Backend\BankAPI\obj\Debug\netcoreapp3.1\staticwebassets\BankAPI.StaticWebAssets.Manifest.cache
 C:\Users\huber\Desktop\Bank_Backend\BankAPI\obj\Debug\netcoreapp3.1\staticwebassets\BankAPI.StaticWebAssets.xml
 C:\Users\huber\Desktop\Bank_Backend\BankAPI\obj\Debug\netcoreapp3.1\BankAPI.genruntimeconfig.cache
+C:\Users\huber\Desktop\Bank_Backend\BankAPI\bin\Debug\netcoreapp3.1\Microsoft.OpenApi.dll
+C:\Users\huber\Desktop\Bank_Backend\BankAPI\bin\Debug\netcoreapp3.1\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\huber\Desktop\Bank_Backend\BankAPI\bin\Debug\netcoreapp3.1\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\huber\Desktop\Bank_Backend\BankAPI\bin\Debug\netcoreapp3.1\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\huber\Desktop\Bank_Backend\BankAPI\obj\Debug\netcoreapp3.1\BankAPI.csproj.CoreCompileInputs.cache
+C:\Users\huber\Desktop\Bank_Backend\BankAPI\obj\Debug\netcoreapp3.1\BankAPI.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\huber\Desktop\Bank_Backend\BankAPI\obj\Debug\netcoreapp3.1\BankAPI.MvcApplicationPartsAssemblyInfo.cache
