@@ -64,40 +64,56 @@ namespace BankAPI.Controllers
             return Ok(new { token });
         }
 
+         [AllowAnonymous]
+         [HttpPost("authorize")]
+         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+         [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
+         public async Task<IActionResult> Authorize([FromBody] AccountDto accountDto, 
+             CancellationToken cancellationToken = default)
+         {
+             var success = await accountService.VerifyPassword(accountDto, cancellationToken);
+             if (success.Equals("null"))
+             {
+                 return Unauthorized("Unauthorized access!");
+             }
 
-        //[AllowAnonymous]
-        [HttpPost("authorize/client")]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> AuthorizeClient([FromBody] AccountDto accountDto, 
+             var token = accountService.GenerateJwt(accountDto);
+             return Ok(new {success, token });
+         }
+
+         //[AllowAnonymous]
+        /* [HttpPost("authorize/client")]
+         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+         [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
+         public async Task<IActionResult> AuthorizeClient([FromBody] AccountDto accountDto, 
+             CancellationToken cancellationToken = default)
+         {
+             var success = await accountService.VerifyClientPassword(accountDto, cancellationToken);
+             if (!success)
+             {
+                 return Unauthorized("Unauthorized access!");
+             }
+
+             var token = accountService.GenerateJwt(accountDto);
+             return Ok(new { token });
+         }
+
+         //[AllowAnonymous]
+         [HttpPost("authorize/admin")]
+         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+         [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
+         public async Task<IActionResult> AuthorizeAdmin([FromBody] AccountDto accountDto,
             CancellationToken cancellationToken = default)
-        {
-            var success = await accountService.VerifyClientPassword(accountDto, cancellationToken);
-            if (!success)
-            {
-                return Unauthorized("Unauthorized access!");
-            }
+         {
+             var success = await accountService.VerifyAdminPassword(accountDto, cancellationToken);
+             if (!success)
+             {
+                 return Unauthorized("Unauthorized access!");
+             }
 
-            var token = accountService.GenerateJwt(accountDto);
-            return Ok(new { token });
-        }
-
-        //[AllowAnonymous]
-        [HttpPost("authorize/admin")]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> AuthorizeAdmin([FromBody] AccountDto accountDto,
-           CancellationToken cancellationToken = default)
-        {
-            var success = await accountService.VerifyAdminPassword(accountDto, cancellationToken);
-            if (!success)
-            {
-                return Unauthorized("Unauthorized access!");
-            }
-
-            var token = accountService.GenerateJwt(accountDto);
-            return Ok(new { token });
-        }
+             var token = accountService.GenerateJwt(accountDto);
+             return Ok(new { token });
+         }*/
 
         //[AllowAnonymous] 
         [HttpPut("modify")]
@@ -203,6 +219,49 @@ namespace BankAPI.Controllers
                 return (bool)account ? (IActionResult)NoContent() : NotFound();
             }
         }
+
+        [AllowAnonymous]
+        [HttpGet("showAllAccounts")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<IEnumerable<Transfer>>> ShowAllAccounts([FromQuery] int takeCount, [FromQuery]int skipCount, 
+            CancellationToken cancellationToken = default)
+        {
+            if (takeCount < 1 || skipCount < 0)
+            {
+                return BadRequest("Failed to show accounts");
+            }
+
+            var accounts = await accountService.ShowAllAccounts(takeCount, skipCount, cancellationToken);
+            if (accounts == null)
+            {
+                return BadRequest("Failed to show accounts");
+            }
+
+            //return Ok(new { count = loanApplications, notes = notes.Item2 });
+            return Ok(new { accounts });
+        }
+
+          [AllowAnonymous]
+          [HttpGet("{login}")]
+          [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
+          [ProducesResponseType(StatusCodes.Status404NotFound)]
+          public async Task<ActionResult<Account>> GetAccount(int id_Account,
+              CancellationToken cancellationToken = default)
+          {
+              var result = await accountService.GetAccount(id_Account, cancellationToken);
+
+              if (result == null)
+              {
+                  return NotFound();
+              }
+
+              else if (result is string)
+              {
+                  return Unauthorized(result);
+              }
+              return Ok(result);
+          }
 
         /*private bool AccountExists(int id)
         {

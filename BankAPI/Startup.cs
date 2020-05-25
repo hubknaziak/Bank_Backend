@@ -74,10 +74,15 @@ namespace BankAPI
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IAccountService, AccountService>(x =>
                 ActivatorUtilities.CreateInstance<AccountService>(x, keyList[0]));
-            services.AddTransient<IOperationRepository, OperationRepository>();
-            services.AddTransient<IOperationService, OperationService>();
-            //services.AddTransient<INoteRepository, NoteRepository>();
-            //services.AddTransient<INoteService, NoteService>();
+            //  services.AddTransient<IOperationRepository, OperationRepository>();
+            //  services.AddTransient<IOperationService, OperationService>();
+            services.AddTransient<ITransferRepository, TransferRepository>();
+            services.AddTransient<ITransferService, TransferService>();
+            services.AddTransient<ILoanRepository, LoanRepository>();
+            services.AddTransient<ILoanService, LoanService>();
+            services.AddTransient<IBank_AccountRepository, Bank_AccountRepository>();
+            services.AddTransient<IBank_AccountService, Bank_AccountService>();
+
 
             services.AddAuthentication(x =>
             {

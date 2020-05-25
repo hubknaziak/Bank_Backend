@@ -63,14 +63,21 @@ namespace BankCore.Services
             ;
         }
 
-        public async Task<bool> VerifyClientPassword(AccountDto userDto, CancellationToken cancellationToken)
+        public async Task<string> VerifyPassword(AccountDto userDto, CancellationToken cancellationToken)
         {
-            return await repository.VerifyClientPassword(userDto, cancellationToken);
+            return await repository.VerifyPassword(userDto, cancellationToken);
         }
 
-        public async Task<bool> VerifyAdminPassword(AccountDto userDto, CancellationToken cancellationToken)
+        /*public async Task<bool> VerifyAdminPassword(AccountDto userDto, CancellationToken cancellationToken)
         {
             return await repository.VerifyAdminPassword(userDto, cancellationToken);
+        }*/
+
+        public async Task<Tuple<int, IEnumerable<Account>>> ShowAllAccounts(int takeCount, int skipCount, CancellationToken cancellationToken)
+        {
+            return await repository.ShowAllAccounts(takeCount, skipCount, cancellationToken);
+            // var loan_Applications = await repository.ShowLoanApplications(takeCount, skipCount, administrator, cancellationToken);
+            // return Tuple.Create(loan_Applications.Item1, loan_Applications.Item2.Select(x => mapper.Map<NoteDto>(x)));
         }
 
         public async Task<bool> ModifyAccount(CreateAccountDto modifyAccountDto, CancellationToken cancellationToken)
@@ -93,11 +100,11 @@ namespace BankCore.Services
             return await repository.UnblockAccount(login, cancellationToken);
         }
 
-        /*public async Task<object> GetAccount(string login, CancellationToken cancellationToken)
+        public async Task<object> GetAccount(int id_Account, CancellationToken cancellationToken)
         {
-            var account = await repository.GetAccount(login, cancellationToken);
+            var account = await repository.GetAccount(id_Account, cancellationToken);
             return account;
-        }*/
+        }
 
         public async Task<object> DeleteAccount(string login,
             CancellationToken cancellationToken)

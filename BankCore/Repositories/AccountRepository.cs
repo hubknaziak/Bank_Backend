@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using BankCore.Dtos;
 using BankCore.Models;
 using System.Linq;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace BankCore.Repositories
 {
@@ -55,7 +57,95 @@ namespace BankCore.Repositories
             }
         }
 
-        public async Task<bool> VerifyClientPassword(AccountDto accountDto, CancellationToken cancellationToken)
+        public async Task<string> VerifyPassword(AccountDto accountDto, CancellationToken cancellationToken)
+        {
+            var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme,
+                ClaimTypes.Name, ClaimTypes.Role);
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, accountDto.Login)); ;
+            identity.AddClaim(new Claim(ClaimTypes.Name, accountDto.Login));
+
+            var redirect = string.Empty;
+
+            var record = await context.Accounts
+                .SingleOrDefaultAsync(x => x.Login == accountDto.Login, cancellationToken);
+
+            var verify = Crypto.VerifyHashedPassword(record.Password, accountDto.Password);
+
+            if(!verify)
+            {
+                return "null";
+            }
+
+         
+            var isAdmin = context.Administrators
+            .Any(x => x.Id_Administrator == record.Id_account);
+            if(isAdmin)
+            {
+               var status = await context.Administrators
+                   .Where(x => x.Id_Administrator == record.Id_account)
+                   .Select(x => x.Status)
+                   .SingleAsync();
+
+                if (status != "active")
+                {
+                    //ModelState.AddModelError("Login", "Account is inactive!");
+                    //return Page();
+                    return "null";
+                }
+
+                identity.AddClaim(new Claim(ClaimTypes.Role, "Administrator"));
+                redirect = "Administrator";
+            }
+            else
+            {
+                var status = await context.Clients
+                    .Where(x => x.Id_Client == record.Id_account)
+                    .Select(x => x.Status)
+                    .SingleAsync();
+
+                if (status != "active")
+                {
+                    //ModelState.AddModelError("Login", "Account is inactive!");
+                    //return Page();
+                    return "null";
+                }
+
+                identity.AddClaim(new Claim(ClaimTypes.Role, "Client"));
+                redirect = "Client";
+            }
+
+            var principal = new ClaimsPrincipal(identity);
+            // await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal,
+            //new AuthenticationProperties { IsPersistent = false });
+            //return RedirectToPage(redirect);
+            return redirect;
+
+        }
+
+        public async Task<Tuple<int, IEnumerable<Account>>> ShowAllAccounts(int takeCount, int skipCount, CancellationToken cancellationToken)
+        {
+            var count = await context.Clients
+               .CountAsync();
+
+            var clients = await context.Clients.ToArrayAsync(cancellationToken);
+
+            List<Account> accounts = null;
+
+            for(int i = 0; i < count; i++)
+            {
+                accounts = await context.Accounts.Where(x => x.Id_account == clients[i].Id_Client)
+                    .OrderByDescending(x => x.Id_account)
+                    .Skip(skipCount)
+                    .Take(takeCount)
+                    .AsNoTracking()
+                    .ToListAsync(cancellationToken);
+            }
+          
+
+            return Tuple.Create(count, accounts as IEnumerable<Account>);
+        }
+
+        /*public async Task<bool> VerifyPassword(AccountDto accountDto, CancellationToken cancellationToken)
         {
             var record = await context.Accounts
                 .SingleOrDefaultAsync(x => x.Login == accountDto.Login, cancellationToken);
@@ -72,26 +162,26 @@ namespace BankCore.Repositories
             {
                 return false;
             }
-        }
+        }*/
 
-        public async Task<bool> VerifyAdminPassword(AccountDto accountDto, CancellationToken cancellationToken)
-        {
-            var record = await context.Accounts
-                .SingleOrDefaultAsync(x => x.Login == accountDto.Login, cancellationToken);
+        /* public async Task<bool> VerifyAdminPassword(AccountDto accountDto, CancellationToken cancellationToken)
+         {
+             var record = await context.Accounts
+                 .SingleOrDefaultAsync(x => x.Login == accountDto.Login, cancellationToken);
 
-            var admin = await context.Accounts
-               .SingleOrDefaultAsync(x => x.Id_account == record.Id_account, cancellationToken);
+             var admin = await context.Accounts
+                .SingleOrDefaultAsync(x => x.Id_account == record.Id_account, cancellationToken);
 
-            if (admin != null)
-            {
-                return record != null &&
-               Crypto.VerifyHashedPassword(record.Password, accountDto.Password);
-            }
-            else
-            {
-                return false;
-            }
-        }
+             if (admin != null)
+             {
+                 return record != null &&
+                Crypto.VerifyHashedPassword(record.Password, accountDto.Password);
+             }
+             else
+             {
+                 return false;
+             }
+         }*/
 
         public async Task<bool> ModifyAccount(CreateAccountDto modifyAccountDto, CancellationToken cancellationToken)
         {
@@ -155,11 +245,13 @@ namespace BankCore.Repositories
 
             return await context.SaveChangesAsync(cancellationToken) > 0;
         }
-        /*public async Task<object> GetAccount(string login, 
+
+
+        public async Task<object> GetAccount(int id_Account, 
             CancellationToken cancellationToken)
         {
             var account = await context.Accounts
-              .SingleOrDefaultAsync(x => x.Login == login,
+              .SingleOrDefaultAsync(x => x.Id_account == id_Account,
                   cancellationToken);
 
             if (account == null)
@@ -168,7 +260,7 @@ namespace BankCore.Repositories
             }
            
             return account;
-        }*/
+        }
 
         public async Task<object> DeleteAccount(string login,
           CancellationToken cancellationToken)
