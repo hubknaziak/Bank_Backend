@@ -13,7 +13,7 @@ namespace BankCore
 
         public DbSet<Bank_Account> Bank_Accounts { get; set; }
 
-        public DbSet<Transfer> Transfers  { get; set; }
+        public DbSet<Transfer> Transfers { get; set; }
 
         public DbSet<Loan_Application> Loan_Applications { get; set; }
 
@@ -22,8 +22,16 @@ namespace BankCore
         public DbSet<Currency> Currencies { get; set; }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options)
-            : base(options) 
-        { 
+            : base(options)
+        {
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Account>(entity =>
+            {
+                entity.HasIndex(e => e.Login).IsUnique();
+            });
         }
     }
 }

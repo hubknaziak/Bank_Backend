@@ -63,13 +63,18 @@ namespace BankCore.Repositories
         {
             var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme,
                 ClaimTypes.Name, ClaimTypes.Role);
-            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, accountDto.Login)); ;
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, accountDto.Login)); 
             identity.AddClaim(new Claim(ClaimTypes.Name, accountDto.Login));
 
             var redirect = string.Empty;
 
             var record = await context.Accounts
                 .SingleOrDefaultAsync(x => x.Login == accountDto.Login, cancellationToken);
+
+            if(record == null)
+            {
+                return "null";
+            }
 
             var verify = Crypto.VerifyHashedPassword(record.Password, accountDto.Password);
 
@@ -81,6 +86,7 @@ namespace BankCore.Repositories
          
             var isAdmin = context.Administrators
             .Any(x => x.Id_Administrator == record.Id_account);
+
             if(isAdmin)
             {
                var status = await context.Administrators
@@ -88,7 +94,7 @@ namespace BankCore.Repositories
                    .Select(x => x.Status)
                    .SingleAsync();
 
-                if (status != "active")
+                if (status != "Active")
                 {
                     //ModelState.AddModelError("Login", "Account is inactive!");
                     //return Page();
