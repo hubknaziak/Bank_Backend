@@ -24,7 +24,9 @@ namespace BankCore.Repositories
             var record = context.Accounts
              .OrderByDescending(x => x.Id_account).FirstOrDefault();
 
-            account.Id_account = record.Id_account + 1;
+            if (account == null) account.Id_account = 0;
+            else account.Id_account = record.Id_account + 1;
+
             client.Id_Client = account.Id_account;
             context.Accounts.Add(account);
             context.Clients.Add(client);
