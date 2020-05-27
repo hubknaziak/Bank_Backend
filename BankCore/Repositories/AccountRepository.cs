@@ -111,7 +111,7 @@ namespace BankCore.Repositories
                     .Select(x => x.Status)
                     .SingleAsync();
 
-                if (status != "active")
+                if (status != "Active")
                 {
                     //ModelState.AddModelError("Login", "Account is inactive!");
                     //return Page();
