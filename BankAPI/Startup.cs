@@ -38,13 +38,8 @@ namespace BankAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var keyListName = "DevelopmentKeys";
-            if (Environment.IsProduction())
-            {
-                keyListName = "ProductionKeys";
-            }
 
-            var keyList = Configuration.GetSection(keyListName).Get<string[]>();
+            var jwtSecret = Configuration.GetValue<string>("JwtSecret");
 
             var allowedHosts = Configuration.GetSection("CorsSettings:AllowedHosts")
                .Get<string[]>();
@@ -74,7 +69,7 @@ namespace BankAPI
             services.AddScoped<IValidateUserFilter, ValidateUserFilter>();
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IAccountService, AccountService>(x =>
-                ActivatorUtilities.CreateInstance<AccountService>(x, keyList[0]));
+                ActivatorUtilities.CreateInstance<AccountService>(x, jwtSecret));
             //  services.AddTransient<IOperationRepository, OperationRepository>();
             //  services.AddTransient<IOperationService, OperationService>();
             services.AddTransient<ITransferRepository, TransferRepository>();
@@ -98,7 +93,7 @@ namespace BankAPI
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII
-                        .GetBytes(keyList[0])),
+                        .GetBytes(jwtSecret)),
                     ValidateIssuer = false,
                     ValidateAudience = false,
                 };
