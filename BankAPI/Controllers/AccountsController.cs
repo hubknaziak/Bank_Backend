@@ -49,16 +49,16 @@ namespace BankAPI.Controllers
                 return UnprocessableEntity("ERROR, Access denied");
             }*/
 
-            var success = await accountService.CreateClientAccount(createAccountDto, cancellationToken);
+            var responce = await accountService.CreateClientAccount(createAccountDto, cancellationToken);
          
-            if (!success)
+            if (responce == "null")
             {
                 return UnprocessableEntity("ERROR, Account cannot be created");
             }
 
             //var token = accountService.GenerateJwt(createAccountDto.AccountDto);
             //return Ok(new { token });
-            return Ok();
+            return Ok(new { responce });
         }
 
 
@@ -69,16 +69,16 @@ namespace BankAPI.Controllers
         public async Task<IActionResult> RegisterAdmin([FromBody] CreateAccountDto createAccountDto,
           CancellationToken cancellationToken = default)
         {
-            var accountType = await accountService.CreateAdminAccount(createAccountDto, cancellationToken);
+            var responce = await accountService.CreateAdminAccount(createAccountDto, cancellationToken);
 
-            if (!accountType)
+            if (responce == "null")
             {
                 return UnprocessableEntity("ERROR, Account cannot be created");
             }
 
             //var token = accountService.GenerateJwt(createAccountDto.AccountDto);
             //return Ok(new { token });
-            return Ok();
+            return Ok(new { responce });
         }
 
          [AllowAnonymous]

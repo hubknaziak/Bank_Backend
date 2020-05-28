@@ -21,7 +21,7 @@ namespace BankCore.Repositories
 
         public AccountRepository(DatabaseContext context) => this.context = context;
 
-        public async Task<bool> CreateClientAccount(Account account, Client client, CancellationToken cancellationToken)
+        public async Task<string> CreateClientAccount(Account account, Client client, CancellationToken cancellationToken)
         {
             var record = context.Accounts
              .OrderByDescending(x => x.Id_account).FirstOrDefault();
@@ -37,15 +37,16 @@ namespace BankCore.Repositories
             context.Clients.Add(client);
             try
             {
-                return await context.SaveChangesAsync(cancellationToken) > 0;
+                await context.SaveChangesAsync(cancellationToken);
+                return account.Login;
             }
             catch (DbUpdateException)
             {
-                return false;
+                return "null";
             }
         }
 
-        public async Task<bool> CreateAdminAccount(Account account, Administrator admin, CancellationToken cancellationToken)
+        public async Task<string> CreateAdminAccount(Account account, Administrator admin, CancellationToken cancellationToken)
         {
             var record = context.Accounts
              .OrderByDescending(x => x.Id_account).FirstOrDefault();
@@ -62,11 +63,12 @@ namespace BankCore.Repositories
             context.Administrators.Add(admin);
             try
             {
-                return await context.SaveChangesAsync(cancellationToken) > 0;
+                await context.SaveChangesAsync(cancellationToken);
+                return account.Login;
             }
             catch (DbUpdateException)
             {
-                return false;
+                return "null";
             }
         }
 

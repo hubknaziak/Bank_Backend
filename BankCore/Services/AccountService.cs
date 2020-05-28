@@ -30,7 +30,7 @@ namespace BankCore.Services
             this.secretKey = secretKey;
         }
 
-        public async Task<bool> CreateClientAccount(CreateAccountDto createUserDto, CancellationToken cancellationToken)
+        public async Task<string> CreateClientAccount(CreateAccountDto createUserDto, CancellationToken cancellationToken)
         {
             return await repository.CreateClientAccount(new Account
             {
@@ -47,7 +47,7 @@ namespace BankCore.Services
             ;
         }
 
-        public async Task<bool> CreateAdminAccount(CreateAccountDto createUserDto, CancellationToken cancellationToken)
+        public async Task<string> CreateAdminAccount(CreateAccountDto createUserDto, CancellationToken cancellationToken)
         {
             return await repository.CreateAdminAccount(new Account
             {

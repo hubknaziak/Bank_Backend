@@ -10,9 +10,9 @@ namespace BankCore.Services
 {
     public interface IAccountService
     {
-        Task<bool> CreateClientAccount(CreateAccountDto CreateuserDto, CancellationToken cancellationToken);
+        Task<string> CreateClientAccount(CreateAccountDto CreateuserDto, CancellationToken cancellationToken);
 
-        Task<bool> CreateAdminAccount(CreateAccountDto CreateuserDto, CancellationToken cancellationToken);
+        Task<string> CreateAdminAccount(CreateAccountDto CreateuserDto, CancellationToken cancellationToken);
 
         Task<string> VerifyPassword(AccountDto user, CancellationToken cancellationToken);
 

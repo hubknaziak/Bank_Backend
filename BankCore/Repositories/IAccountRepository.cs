@@ -10,9 +10,9 @@ namespace BankCore.Repositories
 {
     public interface IAccountRepository
     {
-        Task<bool> CreateClientAccount(Account user, Client client, CancellationToken cancellationToken);
+        Task<string> CreateClientAccount(Account user, Client client, CancellationToken cancellationToken);
 
-        Task<bool> CreateAdminAccount(Account user, Administrator admin, CancellationToken cancellationToken);
+        Task<string> CreateAdminAccount(Account user, Administrator admin, CancellationToken cancellationToken);
 
         Task<string> VerifyPassword(AccountDto user, CancellationToken cancellationToken);
 
