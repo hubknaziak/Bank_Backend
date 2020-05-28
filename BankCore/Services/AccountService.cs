@@ -34,7 +34,7 @@ namespace BankCore.Services
         {
             return await repository.CreateClientAccount(new Account
             {
-                Login = createUserDto.AccountDto.Login,
+                //Login = createUserDto.AccountDto.Login,
                 Password = Crypto.HashPassword(createUserDto.AccountDto.Password),
                 First_name = createUserDto.AccountDto.First_name,
                 Last_name = createUserDto.AccountDto.Last_name
@@ -51,7 +51,7 @@ namespace BankCore.Services
         {
             return await repository.CreateAdminAccount(new Account
             {
-                Login = createUserDto.AccountDto.Login,
+                //Login = createUserDto.AccountDto.Login,
                 Password = Crypto.HashPassword(createUserDto.AccountDto.Password),
                 First_name = createUserDto.AccountDto.First_name,
                 Last_name = createUserDto.AccountDto.Last_name
@@ -106,13 +106,25 @@ namespace BankCore.Services
             return account;
         }
 
+        public async Task<object> GetClientAccount(string login, CancellationToken cancellationToken)
+        {
+            var account = await repository.GetClientAccount(login, cancellationToken);
+            return account;
+        }
+
+        public async Task<object> GetAdminAccount(string login, CancellationToken cancellationToken)
+        {
+            var account = await repository.GetAdminAccount(login, cancellationToken);
+            return account;
+        }
+
         public async Task<object> DeleteAccount(string login,
             CancellationToken cancellationToken)
         {
             return await repository.DeleteAccount(login, cancellationToken);
         }
 
-        public string GenerateJwt(AccountDto userDto)
+        public string GenerateJwt(string login)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(secretKey);
@@ -120,7 +132,7 @@ namespace BankCore.Services
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.UserData, userDto.Login) 
+                    new Claim(ClaimTypes.UserData, login) 
                 }),
                 Expires = DateTime.UtcNow.AddHours(configuration.GetValue<int>("TokenExpiryHours")),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),

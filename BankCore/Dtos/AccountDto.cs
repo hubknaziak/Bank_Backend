@@ -7,7 +7,7 @@ namespace BankCore.Dtos
 {
     public class AccountDto
     {
-        [Required]
+        //[Required]
         [DataType(DataType.Text)]
         public string Login { get; set; }
         public string NewLogin { get; set; }

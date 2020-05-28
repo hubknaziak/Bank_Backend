@@ -11,6 +11,8 @@ using BankCore.Services;
 using Microsoft.AspNetCore.Authorization;
 using BankCore.Dtos;
 using System.Threading;
+using BankAPI.Extentions;
+using BankAPI.Filters;
 
 namespace BankAPI.Controllers
 {
@@ -21,9 +23,13 @@ namespace BankAPI.Controllers
 
         private readonly IAccountService accountService;
 
-        public AccountsController(IAccountService accountService)
+        private readonly IValidateUserFilter validateUserFilter;
+
+
+        public AccountsController(IAccountService accountService, IValidateUserFilter validateUserFilter)
         {
             this.accountService = accountService;
+            this.validateUserFilter = validateUserFilter;
         }
 
 
@@ -34,6 +40,15 @@ namespace BankAPI.Controllers
         public async Task<IActionResult> RegisterClient([FromBody] CreateAccountDto createAccountDto,
            CancellationToken cancellationToken = default)
         {
+            string login = HttpContext.GetLoginFromClaims();
+
+            //var access = await validateUserFilter.ValidateUser(login, cancellationToken);
+
+            /*if(access == "client")
+            {
+                return UnprocessableEntity("ERROR, Access denied");
+            }*/
+
             var success = await accountService.CreateClientAccount(createAccountDto, cancellationToken);
          
             if (!success)
@@ -41,8 +56,9 @@ namespace BankAPI.Controllers
                 return UnprocessableEntity("ERROR, Account cannot be created");
             }
 
-            var token = accountService.GenerateJwt(createAccountDto.AccountDto);
-            return Ok(new { token });
+            //var token = accountService.GenerateJwt(createAccountDto.AccountDto);
+            //return Ok(new { token });
+            return Ok();
         }
 
 
@@ -53,22 +69,23 @@ namespace BankAPI.Controllers
         public async Task<IActionResult> RegisterAdmin([FromBody] CreateAccountDto createAccountDto,
           CancellationToken cancellationToken = default)
         {
-            var success = await accountService.CreateAdminAccount(createAccountDto, cancellationToken);
+            var accountType = await accountService.CreateAdminAccount(createAccountDto, cancellationToken);
 
-            if (!success)
+            if (!accountType)
             {
                 return UnprocessableEntity("ERROR, Account cannot be created");
             }
 
-            var token = accountService.GenerateJwt(createAccountDto.AccountDto);
-            return Ok(new { token });
+            //var token = accountService.GenerateJwt(createAccountDto.AccountDto);
+            //return Ok(new { token });
+            return Ok();
         }
 
          [AllowAnonymous]
-         [HttpPost("authorize")]
+         [HttpPost("authenticate")]
          [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
          [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
-         public async Task<IActionResult> Authorize([FromBody] AccountDto accountDto, 
+         public async Task<IActionResult> Authenticate([FromBody] AccountDto accountDto, 
              CancellationToken cancellationToken = default)
          {
              var success = await accountService.VerifyPassword(accountDto, cancellationToken);
@@ -77,7 +94,7 @@ namespace BankAPI.Controllers
                  return Unauthorized("Unauthorized access!");
              }
 
-             var token = accountService.GenerateJwt(accountDto);
+             var token = accountService.GenerateJwt(accountDto.Login);
              return Ok(new {success, token });
          }
 
@@ -262,6 +279,50 @@ namespace BankAPI.Controllers
               }
               return Ok(result);
           }
+
+        //[AllowAnonymous]
+        [HttpGet]
+        [ProducesResponseType(typeof(GetClientDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<GetClientDto>> GetClientAccount(CancellationToken cancellationToken = default)
+        {
+            string login = HttpContext.GetLoginFromClaims();
+
+            var result = await accountService.GetClientAccount(login, cancellationToken);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            else if (result is string)
+            {
+                return Unauthorized(result);
+            }
+            return Ok(result);
+        }
+
+        //[AllowAnonymous]
+        [HttpGet]
+        [ProducesResponseType(typeof(GetClientDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<GetClientDto>> GetAdminAccount(CancellationToken cancellationToken = default)
+        {
+            string login = HttpContext.GetLoginFromClaims();
+
+            var result = await accountService.GetAdminAccount(login, cancellationToken);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            else if (result is string)
+            {
+                return Unauthorized(result);
+            }
+            return Ok(result);
+        }
 
         /*private bool AccountExists(int id)
         {

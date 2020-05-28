@@ -57,7 +57,7 @@ namespace BankCore.Services
             return await repository.CreateTransfer(new Transfer
             {
                 Sending_Date = DateTime.Now,
-                Excecution_Date = transferDto.Excecution_Date,
+                Execution_Date = transferDto.Excecution_Date,
                 Title = transferDto.Title,
                 Receiver = transferDto.Receiver,
                 Description = transferDto.Description,

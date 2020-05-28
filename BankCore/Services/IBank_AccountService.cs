@@ -16,6 +16,6 @@ namespace BankCore.Services
 
         Task<bool> UnblockBankAccount(int Id_Bank_Account, CancellationToken cancellationToken);  //update
 
-        Task<Bank_Account> CheckAccountAmount(int Id_Bank_Account, CancellationToken cancellationToken);    //get
+        Task<decimal> CheckAccountAmount(int Id_Bank_Account, CancellationToken cancellationToken);    //get
     }
 }

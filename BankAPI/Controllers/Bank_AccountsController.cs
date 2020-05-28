@@ -80,16 +80,16 @@ namespace BankAPI.Controllers
         [HttpGet("checkAmount")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        public async Task<ActionResult<Bank_Account>> CheckAccountAmount(int id_Bank_Account,
+        public async Task<ActionResult<decimal>> CheckAccountAmount(int id_Bank_Account,
         CancellationToken cancellationToken = default)
         {
-            var bank_Account = await bank_AccountService.CheckAccountAmount(id_Bank_Account, cancellationToken);
-            if (bank_Account == null)
+            var bank_Amount = await bank_AccountService.CheckAccountAmount(id_Bank_Account, cancellationToken);
+            /*if (bank_Account == null)
             {
                 return UnprocessableEntity("Failed to check account amount");
-            }
+            }*/
 
-            return bank_Account;
+            return bank_Amount;
         }
     }
 }

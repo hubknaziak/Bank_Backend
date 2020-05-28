@@ -12,7 +12,7 @@ namespace BankCore.Models
 
         [Required]
         [StringLength(20)]
-        public string name { get; set; }
+        public string Name { get; set; }
 
         [Required]
         public decimal Exchange_Rate { get; set; }

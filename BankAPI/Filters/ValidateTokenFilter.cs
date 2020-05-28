@@ -22,15 +22,15 @@ namespace BankAPI.Filters
                 return;
             }
 
-            var userEmail = context.HttpContext.GetEmailFromClaims();
-            if (userEmail == null)
+            var userLogin = context.HttpContext.GetLoginFromClaims();
+            if (userLogin == null)
             {
                 context.Result = new UnauthorizedObjectResult(
-                    "Error: HttpContext.User.EmailClaim is null");
+                    "Error: HttpContext.User.LoginClaim is null");
                 return;
             }
 
-            var isValidated = TokenUtility.Validate(userEmail,
+            var isValidated = TokenUtility.Validate(userLogin,
                 context.HttpContext.Request.Headers);
 
             if (!isValidated)

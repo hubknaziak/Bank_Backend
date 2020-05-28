@@ -13,7 +13,7 @@ namespace BankCore.Models
 
         [Required]
         [DataType(DataType.Date)]
-        public DateTime Openinig_Date { get; set; }
+        public DateTime Opening_Date { get; set; }
 
         [Required]
         public decimal Account_Balance { get; set; }

@@ -3,21 +3,23 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace BankCore.Models
+namespace BankCore.Dtos
 {
-    public class Account
+    public class GetClientDto
     {
-        [Key]
-        public int Id_account { get; set; }
         [Required]
-        [RegularExpression(@"\d{9}")]
-        [StringLength(9)]
         public string Login { get; set; }
-        [Required]
-        public string Password { get; set; }
         [Required]
         public string First_name { get; set; }
         [Required]
         public string Last_name { get; set; }
+
+        [Required]
+        [StringLength(12)]
+        public string Phone_Number { get; set; }
+
+        [StringLength(50)]
+        public string Address { get; set; }
+
     }
 }

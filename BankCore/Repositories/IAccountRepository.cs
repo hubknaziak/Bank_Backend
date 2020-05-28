@@ -30,6 +30,10 @@ namespace BankCore.Repositories
 
         Task<object> GetAccount(int id_Account, CancellationToken cancellationToken);
 
+        Task<object> GetClientAccount(string login, CancellationToken cancellationToken);
+
+        Task<object> GetAdminAccount(string login, CancellationToken cancellationToken);
+
         Task<object> DeleteAccount(string login, CancellationToken cancellationToken);
 
     }

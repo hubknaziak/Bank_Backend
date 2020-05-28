@@ -17,7 +17,7 @@ namespace BankCore.Models
 
         [Required]
         [DataType(DataType.Date)]
-        public DateTime Excecution_Date { get; set; }
+        public DateTime Execution_Date { get; set; }
 
         [Required]
         [StringLength(30)]

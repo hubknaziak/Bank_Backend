@@ -35,12 +35,12 @@ namespace BankCore.Repositories
             return await context.SaveChangesAsync(cancellationToken) > 0;
         }
 
-        public async Task<Bank_Account> CheckAccountAmount(int Id_Bank_Account, CancellationToken cancellationToken)
+        public async Task<decimal> CheckAccountAmount(int Id_Bank_Account, CancellationToken cancellationToken)
         {
             var record = await context.Bank_Accounts
               .SingleOrDefaultAsync(x => x.Id_Bank_Account == Id_Bank_Account, cancellationToken);
 
-            return record;
+            return record.Account_Balance;
         }
 
         public async Task<bool> CreateBankAccount(Bank_Account bank_Account, Bank_AccountDto bank_AccountDto, CancellationToken cancellationToken)

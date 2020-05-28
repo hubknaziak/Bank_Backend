@@ -10,6 +10,8 @@ using BankCore.Models;
 using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Server.IIS;
+using Microsoft.AspNetCore.Http;
 
 namespace BankCore.Repositories
 {
@@ -24,9 +26,12 @@ namespace BankCore.Repositories
             var record = context.Accounts
              .OrderByDescending(x => x.Id_account).FirstOrDefault();
 
-            if (account == null) account.Id_account = 0;
-            else account.Id_account = record.Id_account + 1;
+            if (record == null) { account.Id_account = 0;}
+            else { account.Id_account = record.Id_account + 1;}
 
+            var newLogin = account.Id_account.ToString().PadLeft(9,'0');
+
+            account.Login = newLogin;
             client.Id_Client = account.Id_account;
             context.Accounts.Add(account);
             context.Clients.Add(client);
@@ -45,7 +50,13 @@ namespace BankCore.Repositories
             var record = context.Accounts
              .OrderByDescending(x => x.Id_account).FirstOrDefault();
 
-            account.Id_account = record.Id_account + 1;
+            if (record == null) { account.Id_account = 0; account.Login = account.Id_account.ToString(); }
+            else { account.Id_account = record.Id_account + 1; account.Login = account.Id_account.ToString(); }
+
+            var newLogin = account.Id_account.ToString().PadLeft(9, '0');
+
+            account.Login = newLogin;
+            //account.Id_account = record.Id_account + 1;
             admin.Id_Administrator = account.Id_account;
             context.Accounts.Add(account);
             context.Administrators.Add(admin);
@@ -124,7 +135,7 @@ namespace BankCore.Repositories
 
             var principal = new ClaimsPrincipal(identity);
             // await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal,
-            //new AuthenticationProperties { IsPersistent = false });
+            // new AuthenticationProperties { IsPersistent = false });
             //return RedirectToPage(redirect);
             return redirect;
 
@@ -138,8 +149,9 @@ namespace BankCore.Repositories
             var clients = await context.Clients.ToArrayAsync(cancellationToken);
 
             List<Account> accounts = null;
+            List<GetAccountDto> getAccounts = null;
 
-            for(int i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 accounts = await context.Accounts.Where(x => x.Id_account == clients[i].Id_Client)
                     .OrderByDescending(x => x.Id_account)
@@ -148,9 +160,19 @@ namespace BankCore.Repositories
                     .AsNoTracking()
                     .ToListAsync(cancellationToken);
             }
-          
 
-            return Tuple.Create(count, accounts as IEnumerable<Account>);
+            foreach (Account a in accounts)
+            {
+                GetAccountDto getAccount = new GetAccountDto
+                {
+                    Login = a.Login,
+                    First_name = a.First_name,
+                    Last_name = a.Last_name,
+                };
+                getAccounts.Add(getAccount);
+            }
+
+            return Tuple.Create(count, getAccounts as IEnumerable<Account>);
         }
 
         /*public async Task<bool> VerifyPassword(AccountDto accountDto, CancellationToken cancellationToken)
@@ -266,8 +288,68 @@ namespace BankCore.Repositories
             {
                 return null;
             }
+
+            GetAccountDto getAccount = new GetAccountDto
+            {
+                Login = account.Login,
+                First_name = account.First_name,
+                Last_name = account.Last_name,
+            };
            
-            return account;
+            return getAccount;
+        }
+
+        public async Task<object> GetClientAccount(string login, CancellationToken cancellationToken)
+        {
+
+            var account = await context.Accounts
+              .SingleOrDefaultAsync(x => x.Login == login,
+                  cancellationToken);
+
+            var client = await context.Clients
+              .SingleOrDefaultAsync(x => x.Id_Client == account.Id_account,
+                  cancellationToken);
+
+            if (account == null)
+            {
+                return null;
+            }
+
+            GetClientDto getclient = new GetClientDto {
+                Login = account.Login,
+                First_name = account.First_name,
+                Last_name = account.Last_name,
+                Phone_Number = client.Phone_Number,
+                Address = client.Address
+            };
+             
+            return getclient;
+        }
+
+        public async Task<object> GetAdminAccount(string login, CancellationToken cancellationToken)
+        {
+            var account = await context.Accounts
+              .SingleOrDefaultAsync(x => x.Login == login,
+                  cancellationToken);
+
+            var admin = await context.Administrators
+              .SingleOrDefaultAsync(x => x.Id_Administrator == account.Id_account,
+                  cancellationToken);
+
+            if (account == null)
+            {
+                return null;
+            }
+
+            GetAdminDto getAdmin = new GetAdminDto
+            {
+                Login = account.Login,
+                First_name = account.First_name,
+                Last_name = account.Last_name,
+                Employment_Date = admin.Employment_Date
+            };
+
+            return getAdmin;
         }
 
         public async Task<object> DeleteAccount(string login,

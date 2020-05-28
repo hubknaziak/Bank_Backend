@@ -30,7 +30,7 @@ namespace BankCore.Services
             return await repository.UnblockBankAccount(Id_Bank_Account, cancellationToken);
         }
 
-        public async Task<Bank_Account> CheckAccountAmount(int Id_Bank_Account, CancellationToken cancellationToken)
+        public async Task<decimal> CheckAccountAmount(int Id_Bank_Account, CancellationToken cancellationToken)
         {
             return await repository.CheckAccountAmount(Id_Bank_Account, cancellationToken);
         }
@@ -39,7 +39,7 @@ namespace BankCore.Services
         {
             return await repository.CreateBankAccount(new Bank_Account
             {
-                Openinig_Date = DateTime.Now,
+                Opening_Date = DateTime.Now,
                 Account_Balance = decimal.Zero,
                 Currency = bank_AccountDto.Currency,
                 Status = "active"

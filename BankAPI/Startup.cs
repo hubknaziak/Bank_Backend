@@ -71,6 +71,7 @@ namespace BankAPI
                 options.Filters.Add(new AuthorizeFilter());
             });
 
+            services.AddScoped<IValidateUserFilter, ValidateUserFilter>();
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IAccountService, AccountService>(x =>
                 ActivatorUtilities.CreateInstance<AccountService>(x, keyList[0]));

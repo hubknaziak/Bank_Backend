@@ -21,7 +21,7 @@ namespace BankCore.Repositories
             var record = await context.Transfers
               .SingleOrDefaultAsync(x => x.Id_Transfer == Id_Transfer, cancellationToken);
 
-            if (record.Excecution_Date.CompareTo(DateTime.Now) > 0 && record.Status.Equals("in progress"))  //jesli transfer sie jeszcze nie wykonal
+            if (record.Execution_Date.CompareTo(DateTime.Now) > 0 && record.Status.Equals("in progress"))  //jesli transfer sie jeszcze nie wykonal
             {
                 record.Status = "cancelled";
                 return await context.SaveChangesAsync(cancellationToken) > 0;
@@ -40,7 +40,7 @@ namespace BankCore.Repositories
               .CountAsync(x => x.Sender_Bank_Account == sender_Bank_Account && x.Receiver_Bank_Account == sender_Bank_Account);
 
             var transfers = await context.Transfers.Where(x => x.Sender_Bank_Account == sender_Bank_Account && x.Receiver_Bank_Account == sender_Bank_Account)
-                .OrderByDescending(x => x.Excecution_Date)
+                .OrderByDescending(x => x.Execution_Date)
                 .Skip(skipCount)
                 .Take(takeCount)
                 .AsNoTracking()
@@ -78,7 +78,7 @@ namespace BankCore.Repositories
 
             
             var transfers = await context.Transfers.Where(x => x.Status.Equals("in progress"))
-                 .OrderByDescending(x => x.Excecution_Date)
+                 .OrderByDescending(x => x.Execution_Date)
                  .Skip(skipCount)
                  .Take(takeCount)
                  .AsNoTracking()
@@ -89,8 +89,8 @@ namespace BankCore.Repositories
 
         public async Task<bool> MakeTransfers(CancellationToken cancellationToken)
         {
-            var transfers = await context.Transfers.Where(x => x.Excecution_Date.CompareTo(DateTime.Now) <= 0 && !x.Status.Equals("cancelled"))
-              .OrderByDescending(x => x.Excecution_Date)
+            var transfers = await context.Transfers.Where(x => x.Execution_Date.CompareTo(DateTime.Now) <= 0 && !x.Status.Equals("cancelled"))
+              .OrderByDescending(x => x.Execution_Date)
               .AsNoTracking()
               .ToListAsync(cancellationToken);
 
@@ -143,6 +143,17 @@ namespace BankCore.Repositories
 
         public async Task<bool> CreateTransfer(Transfer transfer, CancellationToken cancellationToken)
         {
+            var senderAccount = await context.Bank_Accounts
+                .SingleOrDefaultAsync(x => x.Id_Bank_Account == transfer.Sender_Bank_Account, cancellationToken);
+
+            var receiverAccount = await context.Bank_Accounts
+                .SingleOrDefaultAsync(x => x.Id_Bank_Account == transfer.Receiver_Bank_Account, cancellationToken);
+
+            if(senderAccount == null || receiverAccount == null)
+            {
+                return false;
+            }
+
             context.Transfers.Add(transfer);
             try
             {

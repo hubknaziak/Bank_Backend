@@ -9,14 +9,14 @@ namespace BankAPI.Extentions
 {
     public static class HttpContextExtentions
     {
-        public static string GetEmailFromClaims(this HttpContext httpContext)
+        public static string GetLoginFromClaims(this HttpContext httpContext)
         {
-            var emailClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.UserData);
-            if (emailClaim == null)
+            var loginClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.UserData);
+            if (loginClaim == null)
             {
                 return null;
             }
-            return emailClaim.Value;
+            return loginClaim.Value;
         }
     }
 }
