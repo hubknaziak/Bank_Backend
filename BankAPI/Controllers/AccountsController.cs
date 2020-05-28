@@ -95,7 +95,7 @@ namespace BankAPI.Controllers
              }
 
              var token = accountService.GenerateJwt(accountDto.Login);
-             return Ok(new {success, token });
+             return Ok(new {accountType = success, token });
          }
 
          //[AllowAnonymous]
