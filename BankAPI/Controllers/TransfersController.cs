@@ -11,6 +11,8 @@ using BankCore.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading;
 using BankCore.Dtos;
+using BankAPI.Extentions;
+using BankAPI.Filters;
 
 namespace BankAPI.Controllers
 {
@@ -18,22 +20,32 @@ namespace BankAPI.Controllers
     [ApiController]
     public class TransfersController : ControllerBase
     {
-        //private readonly DatabaseContext _context;
         private readonly ITransferService transferService;
 
-        public TransfersController(ITransferService transferService)
+
+        private readonly IValidateUserFilter validateUserFilter;
+
+        public TransfersController(ITransferService transferService, IValidateUserFilter validateUserFilter)
         {
-            //_context = context;
             this.transferService = transferService;
+            this.validateUserFilter = validateUserFilter;
         }
 
-        [AllowAnonymous]
         [HttpPost("createTransfer")]
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> CreateTransfer([FromBody] TransferDto transferDto,
           CancellationToken cancellationToken = default)
         {
+            string l = HttpContext.GetLoginFromClaims();
+
+            var access = await validateUserFilter.ValidateUser(l, cancellationToken);
+
+            if (access == "admin" || access == "null")
+            {
+                return UnprocessableEntity("ERROR, Access denied");
+            }
+
             var success = await transferService.CreateTransfer(transferDto, cancellationToken);
 
             if (!success)
@@ -46,23 +58,30 @@ namespace BankAPI.Controllers
             return Ok();
         }
 
-        [AllowAnonymous]
         [HttpPut("cancelTransaction")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> CancelTransaction(int Id_Transaction,
          CancellationToken cancellationToken = default)
         {
+            string l = HttpContext.GetLoginFromClaims();
+
+            var access = await validateUserFilter.ValidateUser(l, cancellationToken);
+
+            if (access == "client" || access == "null")
+            {
+                return UnprocessableEntity("ERROR, Access denied");
+            }
+
             var success = await transferService.CancelTransaction(Id_Transaction, cancellationToken);
             if (!success)
             {
-                return UnprocessableEntity("Failed to block an account");
+                return UnprocessableEntity("Failed to cancel a transaction");
             }
 
             return NoContent();
         }
 
-        [AllowAnonymous]
         [HttpGet("checkTransactionHistory")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -83,7 +102,6 @@ namespace BankAPI.Controllers
             return Ok(new { transfers });
         }
 
-        [AllowAnonymous]
         [HttpGet("showAwaitingTransfers")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -92,19 +110,18 @@ namespace BankAPI.Controllers
         {
             if (takeCount < 1 || skipCount < 0)
             {
-                return BadRequest("Failed to check loan applocations");
+                return BadRequest("Failed to show awaiting transfers");
             }
 
             var transfers = await transferService.ShowAwaitingTransfers(takeCount, skipCount, cancellationToken);
             if (transfers == null)
             {
-                return BadRequest("Failed to check transaction history");
+                return BadRequest("Failed to show awaiting transfers");
             }
 
             return Ok(new { transfers });
         }
 
-        [AllowAnonymous]
         [HttpGet("showCurrencies")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -113,34 +130,40 @@ namespace BankAPI.Controllers
         {
             if (takeCount < 1 || skipCount < 0)
             {
-                return BadRequest("Failed to check loan applocations");
+                return BadRequest("Failed to show currencies");
             }
 
             var currencies = await transferService.ShowCurrencies(takeCount, skipCount, cancellationToken);
             if (currencies == null)
             {
-                return BadRequest("Failed to check transaction history");
+                return BadRequest("Failed to show currencies");
             }
 
             return Ok(new { currencies });
         }
 
 
-        [AllowAnonymous]
         [HttpPut("makeTransfers")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> MakeTransfers(CancellationToken cancellationToken = default)
         {
+            string l = HttpContext.GetLoginFromClaims();
+
+            var access = await validateUserFilter.ValidateUser(l, cancellationToken);
+
+            if (access == "client" || access == "null")
+            {
+                return UnprocessableEntity("ERROR, Access denied");
+            }
+
             var success = await transferService.MakeTransfers(cancellationToken);
 
             if (!success)
             {
-                return UnprocessableEntity("ERROR, Loan application cannot be considered");
+                return UnprocessableEntity("ERROR, transfers cannot be made or there are not any transfers to be made");
             }
 
-            //var token = operationService.GenerateJwt(createAccountDto.AccountDto);
-            //return Ok(new { token });
             return NoContent();
         }
 

@@ -8,7 +8,7 @@ namespace BankCore.Dtos
     public class LoanDto
     {
         [Required]
-        public int Id_Loan_Application;
+        public int Id_Loan_Application { get; set; }
 
         [Required]
         public decimal Total_Amount { get; set; }

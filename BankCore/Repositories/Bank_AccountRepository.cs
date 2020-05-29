@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,6 +49,19 @@ namespace BankCore.Repositories
             var record = await context.Accounts
                 .SingleOrDefaultAsync(x => x.Login == bank_AccountDto.ClientLogin, cancellationToken);
 
+            if(record == null)
+            {
+                return false;
+            }
+
+            var currency = await context.Currencies
+               .SingleOrDefaultAsync(x => x.Id_Currency == bank_AccountDto.Currency, cancellationToken);
+
+            if (currency == null)
+            {
+                return false;
+            }
+
             bank_Account.Client = record.Id_account;
             context.Bank_Accounts.Add(bank_Account);
             try
@@ -58,6 +72,21 @@ namespace BankCore.Repositories
             {
                 return false;
             }
+        }
+
+        public async Task<Tuple<int, IEnumerable<Bank_Account>>> ShowBankAccounts(int takeCount, int skipCount, int client, CancellationToken cancellationToken)
+        {
+            var count = await context.Bank_Accounts
+              .CountAsync(x => x.Client == client);
+
+            var bankAccounts = await context.Bank_Accounts.Where(x => x.Client == client)
+                .OrderByDescending(x => x.Opening_Date)
+                .Skip(skipCount)
+                .Take(takeCount)
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+
+            return Tuple.Create(count, bankAccounts as IEnumerable<Bank_Account>);
         }
     }
 }

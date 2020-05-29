@@ -45,5 +45,10 @@ namespace BankCore.Services
                 Status = "active"
             }, bank_AccountDto, cancellationToken);
         }
+
+        public async Task<Tuple<int, IEnumerable<Bank_Account>>> ShowBankAccounts(int takeCount, int skipCount, int id_client, CancellationToken cancellationToken)
+        {
+            return await repository.ShowBankAccounts( takeCount,  skipCount,  id_client,  cancellationToken);
+        }
     }
 }

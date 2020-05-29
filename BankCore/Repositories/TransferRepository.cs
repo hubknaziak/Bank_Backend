@@ -37,9 +37,9 @@ namespace BankCore.Repositories
         public async Task<Tuple<int, IEnumerable<Transfer>>> CheckTransactionHistory(int sender_Bank_Account,int takeCount, int skipCount, CancellationToken cancellationToken)
         {
             var count = await context.Transfers
-              .CountAsync(x => x.Sender_Bank_Account == sender_Bank_Account && x.Receiver_Bank_Account == sender_Bank_Account);
+              .CountAsync(x => x.Sender_Bank_Account == sender_Bank_Account || x.Receiver_Bank_Account == sender_Bank_Account);
 
-            var transfers = await context.Transfers.Where(x => x.Sender_Bank_Account == sender_Bank_Account && x.Receiver_Bank_Account == sender_Bank_Account)
+            var transfers = await context.Transfers.Where(x => x.Sender_Bank_Account == sender_Bank_Account || x.Receiver_Bank_Account == sender_Bank_Account)
                 .OrderByDescending(x => x.Execution_Date)
                 .Skip(skipCount)
                 .Take(takeCount)
@@ -89,7 +89,7 @@ namespace BankCore.Repositories
 
         public async Task<bool> MakeTransfers(CancellationToken cancellationToken)
         {
-            var transfers = await context.Transfers.Where(x => x.Execution_Date.CompareTo(DateTime.Now) <= 0 && !x.Status.Equals("cancelled"))
+            var transfers = await context.Transfers.Where(x => x.Execution_Date.CompareTo(DateTime.Now) <= 0 && !x.Status.Equals("cancelled") && !x.Status.Equals("executed"))
               .OrderByDescending(x => x.Execution_Date)
               .AsNoTracking()
               .ToListAsync(cancellationToken);

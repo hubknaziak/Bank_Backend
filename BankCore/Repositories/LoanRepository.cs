@@ -113,6 +113,8 @@ namespace BankCore.Repositories
             var record = await context.Loan_Applications
                 .SingleOrDefaultAsync(x => x.Id_Loan_Application == loanDto.Id_Loan_Application, cancellationToken);
 
+            record.Status = "accepted";
+
             loan.Client = record.Client;
             loan.Administrator = record.Administrator;
             loan.Bank_Account = record.Bank_Account;
