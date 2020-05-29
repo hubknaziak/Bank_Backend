@@ -284,12 +284,23 @@ namespace BankAPI.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(GetClientDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<GetClientDto>> GetClientAccount(CancellationToken cancellationToken = default)
+        public async Task<ActionResult<GetClientDto>> GetAccount(CancellationToken cancellationToken = default)
         {
             string login = HttpContext.GetLoginFromClaims();
 
-            var result = await accountService.GetClientAccount(login, cancellationToken);
+            var access = await validateUserFilter.ValidateUser(login, cancellationToken);
 
+            object result = null;
+
+            if (access == "admin")
+            {
+                 result = await accountService.GetAdminAccount(login, cancellationToken);
+            }
+            else if(access == "client") 
+            {
+                 result = await accountService.GetClientAccount(login, cancellationToken);
+            }
+           
             if (result == null)
             {
                 return NotFound();
@@ -302,7 +313,7 @@ namespace BankAPI.Controllers
             return Ok(result);
         }
 
-        //[AllowAnonymous]
+       /* //[AllowAnonymous]
         [HttpGet]
         [ProducesResponseType(typeof(GetClientDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -322,7 +333,7 @@ namespace BankAPI.Controllers
                 return Unauthorized(result);
             }
             return Ok(result);
-        }
+        }*/
 
         /*private bool AccountExists(int id)
         {
