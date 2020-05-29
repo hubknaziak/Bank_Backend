@@ -8,13 +8,6 @@ namespace BankCore.Dtos
     public class GetClientDto
     {
         [Required]
-        public string Login { get; set; }
-        [Required]
-        public string First_name { get; set; }
-        [Required]
-        public string Last_name { get; set; }
-
-        [Required]
         [StringLength(12)]
         public string Phone_Number { get; set; }
 

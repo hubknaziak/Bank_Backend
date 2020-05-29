@@ -10,8 +10,7 @@ namespace BankCore.Dtos
         //[Required]
         [DataType(DataType.Text)]
         public string Login { get; set; }
-        public string NewLogin { get; set; }
-        [Required]
+        //[Required]
         public string Password { get; set; }
         public string NewPassword { get; set; }
         //[Required]

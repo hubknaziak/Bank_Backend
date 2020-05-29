@@ -33,7 +33,6 @@ namespace BankAPI.Controllers
         }
 
 
-        [AllowAnonymous]
         [HttpPost("register/client")]
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
@@ -42,12 +41,12 @@ namespace BankAPI.Controllers
         {
             string login = HttpContext.GetLoginFromClaims();
 
-            //var access = await validateUserFilter.ValidateUser(login, cancellationToken);
+            var access = await validateUserFilter.ValidateUser(login, cancellationToken);
 
-            /*if(access == "client")
+            if(access == "client" || access == "null")
             {
                 return UnprocessableEntity("ERROR, Access denied");
-            }*/
+            }
 
             var response = await accountService.CreateClientAccount(createAccountDto, cancellationToken);
          
@@ -56,19 +55,24 @@ namespace BankAPI.Controllers
                 return UnprocessableEntity("ERROR, Account cannot be created");
             }
 
-            //var token = accountService.GenerateJwt(createAccountDto.AccountDto);
-            //return Ok(new { token });
             return Ok(new { login = response });
         }
 
-
-        [AllowAnonymous]
         [HttpPost("register/admin")]
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> RegisterAdmin([FromBody] CreateAccountDto createAccountDto,
           CancellationToken cancellationToken = default)
         {
+            string login = HttpContext.GetLoginFromClaims();
+
+            var access = await validateUserFilter.ValidateUser(login, cancellationToken);
+
+            if (access == "client" || access == "null")
+            {
+                return UnprocessableEntity("ERROR, Access denied");
+            }
+
             var response = await accountService.CreateAdminAccount(createAccountDto, cancellationToken);
 
             if (response == "null")
@@ -76,8 +80,6 @@ namespace BankAPI.Controllers
                 return UnprocessableEntity("ERROR, Account cannot be created");
             }
 
-            //var token = accountService.GenerateJwt(createAccountDto.AccountDto);
-            //return Ok(new { token });
             return Ok(new { login = response });
         }
 
@@ -94,51 +96,27 @@ namespace BankAPI.Controllers
                  return Unauthorized("Unauthorized access!");
              }
 
-             var token = accountService.GenerateJwt(accountDto.Login);
+             var token = accountService.GenerateJwt(accountDto);
              return Ok(new {accountType = success, token });
          }
 
-         //[AllowAnonymous]
-        /* [HttpPost("authorize/client")]
-         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-         [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
-         public async Task<IActionResult> AuthorizeClient([FromBody] AccountDto accountDto, 
-             CancellationToken cancellationToken = default)
-         {
-             var success = await accountService.VerifyClientPassword(accountDto, cancellationToken);
-             if (!success)
-             {
-                 return Unauthorized("Unauthorized access!");
-             }
-
-             var token = accountService.GenerateJwt(accountDto);
-             return Ok(new { token });
-         }
-
-         //[AllowAnonymous]
-         [HttpPost("authorize/admin")]
-         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-         [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
-         public async Task<IActionResult> AuthorizeAdmin([FromBody] AccountDto accountDto,
-            CancellationToken cancellationToken = default)
-         {
-             var success = await accountService.VerifyAdminPassword(accountDto, cancellationToken);
-             if (!success)
-             {
-                 return Unauthorized("Unauthorized access!");
-             }
-
-             var token = accountService.GenerateJwt(accountDto);
-             return Ok(new { token });
-         }*/
-
-        //[AllowAnonymous] 
+       
         [HttpPut("modify")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> ModifyAccount(CreateAccountDto modifyAccountDto, 
             CancellationToken cancellationToken = default)
         {
+            string login = HttpContext.GetLoginFromClaims();
+
+            var access = await validateUserFilter.ValidateUser(login, cancellationToken);
+
+            if (access == "client" || access == "null")
+            {
+                return UnprocessableEntity("ERROR, Access denied");
+            }
+
+
             var success = await accountService.ModifyAccount(modifyAccountDto, cancellationToken);
             if (!success)
             {
@@ -148,7 +126,6 @@ namespace BankAPI.Controllers
             return NoContent();
         }
 
-       // [AllowAnonymous] 
         [HttpPut("change")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
@@ -164,13 +141,21 @@ namespace BankAPI.Controllers
             return NoContent();
         }
 
-        //[AllowAnonymous]
         [HttpPut("block")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> BlockAccount(string login,
           CancellationToken cancellationToken = default)
         {
+            string l = HttpContext.GetLoginFromClaims();
+
+            var access = await validateUserFilter.ValidateUser(l, cancellationToken);
+
+            if (access == "client" || access == "null")
+            {
+                return UnprocessableEntity("ERROR, Access denied");
+            }
+
             var success = await accountService.BlockAccount(login, cancellationToken);
             if (!success)
             {
@@ -186,6 +171,15 @@ namespace BankAPI.Controllers
         public async Task<IActionResult> UnblockAccount(string login,
          CancellationToken cancellationToken = default)
         {
+            string l = HttpContext.GetLoginFromClaims();
+
+            var access = await validateUserFilter.ValidateUser(l, cancellationToken);
+
+            if (access == "client" || access == "null")
+            {
+                return UnprocessableEntity("ERROR, Access denied");
+            }
+
             var success = await accountService.UnblockAccount(login, cancellationToken);
             if (!success)
             {
@@ -220,6 +214,16 @@ namespace BankAPI.Controllers
         [HttpDelete("{login}")]
         public async Task<IActionResult> DeleteAccount(string login, CancellationToken cancellationToken)
         {
+
+            string l = HttpContext.GetLoginFromClaims();
+
+            var access = await validateUserFilter.ValidateUser(l, cancellationToken);
+
+            if (access == "client" || access == "null")
+            {
+                return UnprocessableEntity("ERROR, Access denied");
+            }
+
             var account = await accountService.DeleteAccount(login, cancellationToken);
             if (account == null)
             {
@@ -237,11 +241,10 @@ namespace BankAPI.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpGet("showAllAccounts")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<Transfer>>> ShowAllAccounts([FromQuery] int takeCount, [FromQuery]int skipCount, 
+        public async Task<ActionResult<IEnumerable<Account>>> ShowAllAccounts([FromQuery] int takeCount, [FromQuery]int skipCount, 
             CancellationToken cancellationToken = default)
         {
             if (takeCount < 1 || skipCount < 0)
@@ -259,7 +262,6 @@ namespace BankAPI.Controllers
             return Ok(new { accounts });
         }
 
-          [AllowAnonymous]
           [HttpGet("{login}")]
           [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
           [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -280,13 +282,12 @@ namespace BankAPI.Controllers
               return Ok(result);
           }
 
-        //[AllowAnonymous]
         [HttpGet]
-        [ProducesResponseType(typeof(GetClientDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(GetAccountDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<GetClientDto>> GetAccount(CancellationToken cancellationToken = default)
+        public async Task<ActionResult<GetAccountDto>> GetAccount(CancellationToken cancellationToken = default)
         {
-            string login = HttpContext.GetLoginFromClaims();
+            var login = HttpContext.GetLoginFromClaims();
 
             var access = await validateUserFilter.ValidateUser(login, cancellationToken);
 

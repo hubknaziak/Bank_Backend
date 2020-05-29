@@ -36,6 +36,6 @@ namespace BankCore.Services
 
         Task<object> DeleteAccount(string login, CancellationToken cancellationToken);
 
-        string GenerateJwt(string login);
+        string GenerateJwt(AccountDto accountDto);
     }
 }

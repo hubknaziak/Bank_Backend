@@ -32,6 +32,10 @@ namespace BankCore.Services
 
         public async Task<string> CreateClientAccount(CreateAccountDto createUserDto, CancellationToken cancellationToken)
         {
+            if(createUserDto.AccountDto.Password == null)
+            {
+                return "null";
+            }
             return await repository.CreateClientAccount(new Account
             {
                 //Login = createUserDto.AccountDto.Login,
@@ -49,6 +53,11 @@ namespace BankCore.Services
 
         public async Task<string> CreateAdminAccount(CreateAccountDto createUserDto, CancellationToken cancellationToken)
         {
+
+            if (createUserDto.AccountDto.Password == null)
+            {
+                return "null";
+            }
             return await repository.CreateAdminAccount(new Account
             {
                 //Login = createUserDto.AccountDto.Login,
@@ -124,7 +133,7 @@ namespace BankCore.Services
             return await repository.DeleteAccount(login, cancellationToken);
         }
 
-        public string GenerateJwt(string login)
+        public string GenerateJwt(AccountDto accountDto)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(secretKey);
@@ -132,7 +141,7 @@ namespace BankCore.Services
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.UserData, login) 
+                    new Claim(ClaimTypes.UserData, accountDto.Login) 
                 }),
                 Expires = DateTime.UtcNow.AddHours(configuration.GetValue<int>("TokenExpiryHours")),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),

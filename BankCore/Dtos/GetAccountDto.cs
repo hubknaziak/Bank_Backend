@@ -14,5 +14,8 @@ namespace BankCore.Dtos
         public string First_name { get; set; }
 
         public string Last_name { get; set; }
+
+        public GetClientDto getClientDto { get; set; }
+        public GetAdminDto getAdminDto { get; set; }
     }
 }

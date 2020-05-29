@@ -223,13 +223,13 @@ namespace BankCore.Repositories
             var client = await context.Clients
                .SingleOrDefaultAsync(x => x.Id_Client == record.Id_account, cancellationToken);
 
-            if (!Crypto.VerifyHashedPassword(record.Password, modifyAccountDto.AccountDto.Password))
+            /*if (!Crypto.VerifyHashedPassword(record.Password, modifyAccountDto.AccountDto.Password))
             {
                 return false;
-            }
+            }*/
 
-            //record.Password = Crypto.HashPassword(modifyAccountDto.AccountDto.NewPassword);
-            record.Login = modifyAccountDto.AccountDto.NewLogin;
+            record.Password = Crypto.HashPassword(modifyAccountDto.AccountDto.NewPassword);
+            //record.Login = modifyAccountDto.AccountDto.NewLogin;
             record.First_name = modifyAccountDto.AccountDto.NewFirst_name;
             record.Last_name = modifyAccountDto.AccountDto.NewLastName;
             client.Phone_Number = modifyAccountDto.ClientDto.NewPhone_Number;
@@ -317,15 +317,21 @@ namespace BankCore.Repositories
                 return null;
             }
 
-            GetClientDto getclient = new GetClientDto {
-                Login = account.Login,
-                First_name = account.First_name,
-                Last_name = account.Last_name,
+            GetClientDto getClientDto = new GetClientDto
+            {
                 Phone_Number = client.Phone_Number,
                 Address = client.Address
             };
+
+            GetAccountDto getAccount = new GetAccountDto
+            {
+                Login = account.Login,
+                First_name = account.First_name,
+                Last_name = account.Last_name,
+                getClientDto = getClientDto
+            };
              
-            return getclient;
+            return getAccount;
         }
 
         public async Task<object> GetAdminAccount(string login, CancellationToken cancellationToken)
@@ -345,13 +351,18 @@ namespace BankCore.Repositories
 
             GetAdminDto getAdmin = new GetAdminDto
             {
-                Login = account.Login,
-                First_name = account.First_name,
-                Last_name = account.Last_name,
                 Employment_Date = admin.Employment_Date
             };
 
-            return getAdmin;
+            GetAccountDto getAccount = new GetAccountDto
+            {
+                Login = account.Login,
+                First_name = account.First_name,
+                Last_name = account.Last_name,
+               getAdminDto = getAdmin
+            };
+
+            return getAccount;
         }
 
         public async Task<object> DeleteAccount(string login,

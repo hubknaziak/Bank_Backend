@@ -41,8 +41,6 @@ namespace BankAPI
 
             var jwtSecret = Configuration.GetValue<string>("JwtSecret");
 
-            var allowedHosts = Configuration.GetSection("CorsSettings:AllowedHosts")
-               .Get<string[]>();
             var allowedMethods = Configuration.GetSection("CorsSettings:AllowedMethods")
                 .Get<string[]>();
 
@@ -53,7 +51,7 @@ namespace BankAPI
                 options.AddDefaultPolicy(
                 builder =>
                 {
-                    builder.WithOrigins(allowedHosts)
+                    builder.AllowAnyOrigin()
                         .AllowAnyHeader()
                         .WithMethods(allowedMethods);
                 });
@@ -122,12 +120,11 @@ namespace BankAPI
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors();
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

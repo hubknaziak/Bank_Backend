@@ -28,14 +28,23 @@ namespace BankAPI.Filters
                 .SingleOrDefaultAsync(x => x.Id_Administrator == account.Id_account,
                 cancellationToken);
 
-            if(admin == null)
+            var client = await context.Clients
+               .SingleOrDefaultAsync(x => x.Id_Client == account.Id_account,
+               cancellationToken);
+
+            if (admin != null)
+            {
+                result = "admin";
+                return result;
+            }
+            else if(client != null)
             {
                 result = "client";
                 return result;
             }
             else
             {
-                result = "admin";
+                result = "null";
                 return result;
             }
         }
