@@ -81,7 +81,7 @@ namespace BankAPI.Controllers
                 return BadRequest("Failed to check loan applocations");
             }
 
-            return Ok(new { loanApplications });
+            return Ok(loanApplications);
         }
 
         [HttpGet("application/{login}")]
@@ -105,7 +105,7 @@ namespace BankAPI.Controllers
                 return BadRequest("Failed to check loan applocations");
             }
 
-            return Ok(new { loanApplications });
+            return Ok(loanApplications);
         }
 
         [HttpGet("application/admin/{login}")]
@@ -129,7 +129,7 @@ namespace BankAPI.Controllers
                 return BadRequest("Failed to check loan applocations");
             }
 
-            return Ok(new { loanApplications });
+            return Ok( loanApplications );
         }
 
         [HttpGet("{login}")]
@@ -154,7 +154,7 @@ namespace BankAPI.Controllers
             }
 
             //return Ok(new { count = loanApplications, notes = notes.Item2 });
-            return Ok(new { loanApplications });
+            return Ok(loanApplications );
         }
 
         [HttpPut("discardLoan")]

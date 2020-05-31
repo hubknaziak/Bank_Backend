@@ -90,7 +90,8 @@ namespace BankCore.Repositories
             var transfer = await context.Transfers
                .SingleOrDefaultAsync(x => x.Id_Transfer == transferId, cancellationToken);
 
-            if(transfer.Status == "executed")
+
+            if(transfer == null || transfer.Status == "executed")
             {
                 return null;
             }

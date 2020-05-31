@@ -53,7 +53,7 @@ namespace BankAPI.Controllers
                 return UnprocessableEntity("ERROR, Bank account cannot be created");
             }
 
-            return Ok( new { bankAccount });
+            return Ok(bankAccount);
         }
 
         [HttpDelete("{id}")]
@@ -161,7 +161,7 @@ namespace BankAPI.Controllers
                 return BadRequest("Failed to show bank accounts");
             }
 
-            return Ok(new { bankAccounts });
+            return Ok(bankAccounts);
         }
     }
 }

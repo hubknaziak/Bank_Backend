@@ -124,6 +124,11 @@ namespace BankCore.Repositories
             var account = await context.Accounts
                .SingleOrDefaultAsync(x => x.Login == login, cancellationToken);
 
+            if(account == null)
+            {
+                return null;
+            }
+
             var client = await context.Clients
               .SingleOrDefaultAsync(x => x.Id_Client == account.Id_account, cancellationToken);
 

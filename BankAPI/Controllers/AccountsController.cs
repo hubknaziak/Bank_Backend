@@ -261,7 +261,7 @@ namespace BankAPI.Controllers
             {
                 return BadRequest("Failed to show accounts");
             }
-            return Ok(new { accounts });
+            return Ok(accounts);
         }
 
           [HttpGet("{login}")]

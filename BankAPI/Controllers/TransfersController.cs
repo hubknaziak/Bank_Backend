@@ -126,7 +126,7 @@ namespace BankAPI.Controllers
                 return BadRequest("Failed to check transaction history");
             }
 
-            return Ok(new { transfers });
+            return Ok(transfers );
         }
 
         [HttpGet("showAwaitingTransfers")]
@@ -146,31 +146,9 @@ namespace BankAPI.Controllers
                 return BadRequest("Failed to show awaiting transfers");
             }
 
-            return Ok(new { transfers });
+            return Ok(transfers );
         }
 
-        [HttpGet("currencies")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<CurrencyDto>>> GetAllCurrencies(CancellationToken cancellationToken = default)
-        {
-            string l = HttpContext.GetLoginFromClaims();
-
-            var access = await validateUserFilter.ValidateUser(l, cancellationToken);
-
-            if (access == "client" || access == "null")
-            {
-                return UnprocessableEntity("ERROR, Access denied");
-            }
-
-            var currencies = await transferService.ShowCurrencies(cancellationToken);
-            if (currencies == null)
-            {
-                return BadRequest("Failed to show currencies");
-            }
-
-            return Ok(new { currencies });
-        }
 
         [HttpGet("{transferId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -193,7 +171,7 @@ namespace BankAPI.Controllers
                 return BadRequest("Transfer do not exists or is has been executed");
             }
 
-            return Ok(new { transfer });
+            return Ok(transfer );
         }
 
         [HttpGet("bankAccount/{bankAccountId}")]
@@ -217,7 +195,7 @@ namespace BankAPI.Controllers
                 return BadRequest("Transfer do not exists or is has been executed");
             }
 
-            return Ok(new { transfer });
+            return Ok(transfer );
         }
 
         [HttpGet]
@@ -241,7 +219,7 @@ namespace BankAPI.Controllers
                 return BadRequest("Transfer do not exists or is has been executed");
             }
 
-            return Ok(new { transfer });
+            return Ok(transfer);
         }
 
 
