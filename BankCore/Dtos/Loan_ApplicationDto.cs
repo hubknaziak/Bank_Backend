@@ -7,28 +7,21 @@ namespace BankCore.Dtos
 {
     public class Loan_ApplicationDto
     {
-        [Required]
         [DataType(DataType.Date)]
-        public DateTime Submission_Date { get; set; }
+        public DateTime submissionDate { get; set; }
 
-        [Required]
         [DataType(DataType.Date)]
-        public DateTime Decicion_Date { get; set; }
+        public DateTime decicionDate { get; set; }
 
         [Required]
-        public decimal Installments_Count { get; set; } //DECIMAL
+        public decimal installmentsCount { get; set; } //DECIMAL
 
         [Required]
-        public decimal Amount { get; set; }
+        public decimal amount { get; set; }
+
+        public int repaymentTime { get; set; }
 
         [Required]
-        [DataType(DataType.Date)]
-        public DateTime Repayment_Time { get; set; }
-
-        [Required]
-        public string ClientLogin { get; set; }
-
-        [Required]
-        public int Bank_Account { get; set; }
+        public int bankAccountId { get; set; }
     }
 }

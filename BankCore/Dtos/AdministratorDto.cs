@@ -5,11 +5,11 @@ using System.Text;
 
 namespace BankCore.Dtos
 {
-    public class AdministratorDto
+    public class AdministratorDto : AccountDto
     {
         [Required]
         [DataType(DataType.Date)]
-        public DateTime Employment_Date { get; set; }
+        public DateTime employmentDate { get; set; }
 
     }
 }

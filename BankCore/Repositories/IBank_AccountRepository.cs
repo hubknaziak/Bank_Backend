@@ -10,14 +10,16 @@ namespace BankCore.Repositories
 {
     public interface IBank_AccountRepository
     {
-        Task<bool> CreateBankAccount(Bank_Account bank_Account, Bank_AccountDto bank_AccountDto, CancellationToken cancellationToken); //DONE
+        Task<object> CreateBankAccount(Bank_Account bank_Account, Bank_AccountDto bank_AccountDto, string login, CancellationToken cancellationToken); //DONE
 
-        Task<bool> BlockBankAccount(int Id_Bank_Account, CancellationToken cancellationToken);  //DONE
+        Task<bool> DeleteBankAccount(int id, CancellationToken cancellationToken);
+
+        Task<bool> BlockBankAccount(Bank_AccountDto bank_AccountDto, CancellationToken cancellationToken);  //DONE
 
         Task<bool> UnblockBankAccount(int Id_Bank_Account, CancellationToken cancellationToken);    //DONE
 
         Task<decimal> CheckAccountAmount(int Id_Bank_Account, CancellationToken cancellationToken);    //DONE
 
-        Task<Tuple<int, IEnumerable<Bank_Account>>> ShowBankAccounts(int takeCount, int skipCount, int client, CancellationToken cancellationToken);   //DONE
+        Task<IEnumerable<Bank_AccountDto>> ShowBankAccounts(string login, CancellationToken cancellationToken);   //DONE
     }
 }

@@ -5,20 +5,15 @@ using System.Text;
 
 namespace BankCore.Dtos
 {
-    public class ClientDto
+    public class ClientDto : AccountDto
     {
+
         //[Required]
         [StringLength(12)]
-        public string Phone_Number { get; set; }
-
-        [StringLength(12)]
-        public string NewPhone_Number { get; set; }
+        public string phoneNumber { get; set; }
 
         [StringLength(50)]
-        public string Address { get; set; }
-        
-        [StringLength(12)]
-        public string NewAddress { get; set; }
+        public string address { get; set; }
 
     }
 }

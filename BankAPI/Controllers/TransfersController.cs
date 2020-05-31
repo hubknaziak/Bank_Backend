@@ -31,8 +31,8 @@ namespace BankAPI.Controllers
             this.validateUserFilter = validateUserFilter;
         }
 
-        [HttpPost("createTransfer")]
-        [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> CreateTransfer([FromBody] TransferDto transferDto,
           CancellationToken cancellationToken = default)
@@ -46,7 +46,7 @@ namespace BankAPI.Controllers
                 return UnprocessableEntity("ERROR, Access denied");
             }
 
-            var success = await transferService.CreateTransfer(transferDto, cancellationToken);
+            var success = await transferService.CreateTransfer(transferDto, l, cancellationToken);
 
             if (!success)
             {
@@ -58,10 +58,37 @@ namespace BankAPI.Controllers
             return Ok();
         }
 
-        [HttpPut("cancelTransaction")]
+        [HttpPost("exchange")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> CancelTransaction(int Id_Transaction,
+        public async Task<IActionResult> ExchangeMoney([FromBody] CurrencyExchangeDto currencyExchangeDto,
+         CancellationToken cancellationToken = default)
+        {
+            string l = HttpContext.GetLoginFromClaims();
+
+            var access = await validateUserFilter.ValidateUser(l, cancellationToken);
+
+            if (access == "admin" || access == "null")
+            {
+                return UnprocessableEntity("ERROR, Access denied");
+            }
+
+            var success = await transferService.ExchangeMoney(currencyExchangeDto, cancellationToken);
+
+            if (!success)
+            {
+                return UnprocessableEntity("ERROR, Transfer cannot be done");
+            }
+
+            //var token = operationService.GenerateJwt(createAccountDto.AccountDto);
+            //return Ok(new { token });
+            return Ok();
+        }
+
+        [HttpPut]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> updateTransfer([FromBody] TransferDto transferDto,
          CancellationToken cancellationToken = default)
         {
             string l = HttpContext.GetLoginFromClaims();
@@ -73,7 +100,7 @@ namespace BankAPI.Controllers
                 return UnprocessableEntity("ERROR, Access denied");
             }
 
-            var success = await transferService.CancelTransaction(Id_Transaction, cancellationToken);
+            var success = await transferService.CancelTransaction(transferDto, cancellationToken);
             if (!success)
             {
                 return UnprocessableEntity("Failed to cancel a transaction");
@@ -122,24 +149,99 @@ namespace BankAPI.Controllers
             return Ok(new { transfers });
         }
 
-        [HttpGet("showCurrencies")]
+        [HttpGet("currencies")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<Currency>>> ShowCurrencies( [FromQuery] int takeCount, 
-            [FromQuery]int skipCount, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<IEnumerable<CurrencyDto>>> GetAllCurrencies(CancellationToken cancellationToken = default)
         {
-            if (takeCount < 1 || skipCount < 0)
+            string l = HttpContext.GetLoginFromClaims();
+
+            var access = await validateUserFilter.ValidateUser(l, cancellationToken);
+
+            if (access == "client" || access == "null")
             {
-                return BadRequest("Failed to show currencies");
+                return UnprocessableEntity("ERROR, Access denied");
             }
 
-            var currencies = await transferService.ShowCurrencies(takeCount, skipCount, cancellationToken);
+            var currencies = await transferService.ShowCurrencies(cancellationToken);
             if (currencies == null)
             {
                 return BadRequest("Failed to show currencies");
             }
 
             return Ok(new { currencies });
+        }
+
+        [HttpGet("{transferId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<TransferDto>> GetTransfer([FromRoute]int transferId,
+            CancellationToken cancellationToken = default)
+        {
+            string l = HttpContext.GetLoginFromClaims();
+
+            var access = await validateUserFilter.ValidateUser(l, cancellationToken);
+
+            if (access == "client" || access == "null")
+            {
+                return UnprocessableEntity("ERROR, Access denied");
+            }
+
+            var transfer = await transferService.GetTransfer(transferId, cancellationToken);
+            if (transfer == null)
+            {
+                return BadRequest("Transfer do not exists or is has been executed");
+            }
+
+            return Ok(new { transfer });
+        }
+
+        [HttpGet("bankAccount/{bankAccountId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<IEnumerable<TransferDto>>> GetTransfers([FromRoute]int bankAccountId,
+            CancellationToken cancellationToken = default)
+        {
+            string l = HttpContext.GetLoginFromClaims();
+
+            var access = await validateUserFilter.ValidateUser(l, cancellationToken);
+
+            if (access == "admin" || access == "null")
+            {
+                return UnprocessableEntity("ERROR, Access denied");
+            }
+
+            var transfer = await transferService.GetTransfers(bankAccountId, cancellationToken);
+            if (transfer == null)
+            {
+                return BadRequest("Transfer do not exists or is has been executed");
+            }
+
+            return Ok(new { transfer });
+        }
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<IEnumerable<TransferDto>>> GetTransfers([FromBody]TransferRequestDto transferRequestDto,
+           CancellationToken cancellationToken = default)
+        {
+            string l = HttpContext.GetLoginFromClaims();
+
+            var access = await validateUserFilter.ValidateUser(l, cancellationToken);
+
+            if (access == "client" || access == "null")
+            {
+                return UnprocessableEntity("ERROR, Access denied");
+            }
+
+            var transfer = await transferService.GetAdminTransfers(transferRequestDto, cancellationToken);
+            if (transfer == null)
+            {
+                return BadRequest("Transfer do not exists or is has been executed");
+            }
+
+            return Ok(new { transfer });
         }
 
 

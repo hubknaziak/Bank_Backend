@@ -30,43 +30,43 @@ namespace BankCore.Services
             this.secretKey = secretKey;
         }
 
-        public async Task<string> CreateClientAccount(CreateAccountDto createUserDto, CancellationToken cancellationToken)
+        public async Task<string> CreateClientAccount(ClientDto clientDto, CancellationToken cancellationToken)
         {
-            if(createUserDto.AccountDto.Password == null)
+            if(clientDto.password == null)
             {
                 return "null";
             }
             return await repository.CreateClientAccount(new Account
             {
                 //Login = createUserDto.AccountDto.Login,
-                Password = Crypto.HashPassword(createUserDto.AccountDto.Password),
-                First_name = createUserDto.AccountDto.First_name,
-                Last_name = createUserDto.AccountDto.Last_name
+                Password = Crypto.HashPassword(clientDto.password),
+                First_name = clientDto.firstName,
+                Last_name = clientDto.lastName
             }, new Client
             {
-                Phone_Number = createUserDto.ClientDto.Phone_Number,
-                Address = createUserDto.ClientDto.Address,
+                Phone_Number = clientDto.phoneNumber,
+                Address = clientDto.address,
                 Status = "Active"
             }, cancellationToken) 
             ;
         }
 
-        public async Task<string> CreateAdminAccount(CreateAccountDto createUserDto, CancellationToken cancellationToken)
+        public async Task<string> CreateAdminAccount(AdministratorDto administratorDto, CancellationToken cancellationToken)
         {
 
-            if (createUserDto.AccountDto.Password == null)
+            if (administratorDto.password == null)
             {
                 return "null";
             }
             return await repository.CreateAdminAccount(new Account
             {
                 //Login = createUserDto.AccountDto.Login,
-                Password = Crypto.HashPassword(createUserDto.AccountDto.Password),
-                First_name = createUserDto.AccountDto.First_name,
-                Last_name = createUserDto.AccountDto.Last_name
+                Password = Crypto.HashPassword(administratorDto.password),
+                First_name = administratorDto.firstName,
+                Last_name = administratorDto.lastName
             }, new Administrator
             {
-                Employment_Date = createUserDto.AdministratorDto.Employment_Date,
+                Employment_Date = administratorDto.employmentDate,
                 Status = "Active"
             }, cancellationToken)
             ;
@@ -82,16 +82,14 @@ namespace BankCore.Services
             return await repository.VerifyAdminPassword(userDto, cancellationToken);
         }*/
 
-        public async Task<Tuple<int, IEnumerable<Account>>> ShowAllAccounts(int takeCount, int skipCount, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GetClientDto>> ShowAllAccounts(CancellationToken cancellationToken)
         {
-            return await repository.ShowAllAccounts(takeCount, skipCount, cancellationToken);
-            // var loan_Applications = await repository.ShowLoanApplications(takeCount, skipCount, administrator, cancellationToken);
-            // return Tuple.Create(loan_Applications.Item1, loan_Applications.Item2.Select(x => mapper.Map<NoteDto>(x)));
+            return await repository.ShowAllAccounts( cancellationToken);
         }
 
-        public async Task<bool> ModifyAccount(CreateAccountDto modifyAccountDto, CancellationToken cancellationToken)
+        public async Task<bool> ModifyAccount(GetClientDto clientDto, CancellationToken cancellationToken)
         {
-            return await repository.ModifyAccount(modifyAccountDto, cancellationToken);
+            return await repository.ModifyAccount(clientDto, cancellationToken);
         }
 
         public async Task<bool> ChangePassword(AccountDto userDto, CancellationToken cancellationToken)
@@ -109,22 +107,19 @@ namespace BankCore.Services
             return await repository.UnblockAccount(login, cancellationToken);
         }
 
-        public async Task<object> GetAccount(int id_Account, CancellationToken cancellationToken)
+        public async Task<string> GetAccountType(string login, CancellationToken cancellationToken)
         {
-            var account = await repository.GetAccount(id_Account, cancellationToken);
-            return account;
+            return await repository.GetAccountType(login, cancellationToken);
         }
 
         public async Task<object> GetClientAccount(string login, CancellationToken cancellationToken)
         {
-            var account = await repository.GetClientAccount(login, cancellationToken);
-            return account;
+            return await repository.GetClientAccount(login, cancellationToken);
         }
 
         public async Task<object> GetAdminAccount(string login, CancellationToken cancellationToken)
         {
-            var account = await repository.GetAdminAccount(login, cancellationToken);
-            return account;
+            return await repository.GetAdminAccount(login, cancellationToken);
         }
 
         public async Task<object> DeleteAccount(string login,
@@ -141,7 +136,7 @@ namespace BankCore.Services
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.UserData, accountDto.Login) 
+                    new Claim(ClaimTypes.UserData, accountDto.login) 
                 }),
                 Expires = DateTime.UtcNow.AddHours(configuration.GetValue<int>("TokenExpiryHours")),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),

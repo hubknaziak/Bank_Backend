@@ -17,7 +17,6 @@ namespace BankCore.Models
         [DataType(DataType.Date)]
         public DateTime Submission_Date { get; set; }
 
-        [Required]
         [DataType(DataType.Date)]
         public DateTime Decicion_Date { get; set; }
 
@@ -27,9 +26,7 @@ namespace BankCore.Models
         [Required]
         public decimal Amount { get; set; }
 
-        [Required]
-        [DataType(DataType.Date)]
-        public DateTime Repayment_Time { get; set; }
+        public int Repayment_Time { get; set; }
 
         [Required]
         [StringLength(30)]

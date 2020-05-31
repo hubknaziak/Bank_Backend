@@ -25,13 +25,13 @@ namespace BankCore.Services
         {
             return await repository.ApplyForLoan(new Loan_Application
             {
-                Submission_Date = loan_ApplicationDto.Submission_Date,
-                Decicion_Date = loan_ApplicationDto.Decicion_Date,
-                Installments_Count = loan_ApplicationDto.Installments_Count,
-                Amount = loan_ApplicationDto.Amount,
-                Repayment_Time = loan_ApplicationDto.Repayment_Time,
-                Status = "awaiting",
-                Bank_Account = loan_ApplicationDto.Bank_Account
+                Submission_Date = DateTime.Now,
+                //Decicion_Date = 
+                Installments_Count = loan_ApplicationDto.installmentsCount,
+                Amount = loan_ApplicationDto.amount,
+                Repayment_Time = loan_ApplicationDto.repaymentTime,
+                Status = "awaiting response",
+                Bank_Account = loan_ApplicationDto.bankAccountId
             }, loan_ApplicationDto, cancellationToken);
         }
 
@@ -42,14 +42,19 @@ namespace BankCore.Services
            // return Tuple.Create(loan_Applications.Item1, loan_Applications.Item2.Select(x => mapper.Map<NoteDto>(x)));
         }
 
-        public async Task<Tuple<int, IEnumerable<Loan_Application>>> ShowLoanApplication(int takeCount, int skipCount, int id_client, CancellationToken cancellationToken)
+        public async Task< IEnumerable<Loan_ApplicationDto>> ShowLoanApplication(string login, CancellationToken cancellationToken)
         {
-            return await repository.ShowLoanApplication(takeCount, skipCount, id_client, cancellationToken);
+            return await repository.ShowLoanApplication(login, cancellationToken);
         }
 
-        public async Task<Tuple<int, IEnumerable<Loan>>> ShowLoan(int takeCount, int skipCount, int id_client, CancellationToken cancellationToken)
+        public async Task<IEnumerable<AdminLoanApplicationDto>> GetAdminLoanApplications(string login, CancellationToken cancellationToken)
         {
-            return await repository.ShowLoan(takeCount, skipCount, id_client, cancellationToken);
+            return await repository.GetAdminLoanApplications(login, cancellationToken);
+        }
+
+        public async Task< IEnumerable<LoanDto>> ShowLoan(string login, CancellationToken cancellationToken)
+        {
+            return await repository.ShowLoan(login, cancellationToken);
         }
 
         public async Task<bool> DiscardLoanApplication(int Id_Loan_Application, CancellationToken cancellationToken)
@@ -57,20 +62,9 @@ namespace BankCore.Services
             return await repository.DiscardLoanApplication(Id_Loan_Application, cancellationToken);
         }
 
-        public async Task<bool> ConfirmLoanApplication(LoanDto loanDto, CancellationToken cancellationToken)
+       public async Task<bool> ConfirmLoanApplication(AdminLoanApplicationDto adminLoanApplicationDto, CancellationToken cancellationToken)
         {
-            return await repository.ConfirmLoanApplication(new Loan
-            {
-                Id_Loan = loanDto.Id_Loan_Application,
-                Total_Amount = loanDto.Total_Amount,
-                Outstanding_Amount = loanDto.Outstanding_Amount,
-                Rate_Of_Interest = loanDto.Rate_Of_Interest,
-                Installments_Count = loanDto.Installments_Count,
-                Installment = loanDto.Installment,
-                Granting_Date = DateTime.Now,
-                End_Of_Repayment = loanDto.End_Of_Repayment,
-                Status = "unpaid"
-            }, loanDto, cancellationToken);
+            return await repository.ConfirmLoanApplication(adminLoanApplicationDto, cancellationToken);
         }
     }
 }

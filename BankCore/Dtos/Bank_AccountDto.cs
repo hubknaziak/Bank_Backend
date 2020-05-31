@@ -7,9 +7,18 @@ namespace BankCore.Dtos
 {
     public class Bank_AccountDto
     {
-        [Required]
-        public int Currency { get; set; }
-        [Required]
-        public string ClientLogin { get; set; }
+        public int currencyId { get; set; }
+    
+        public decimal balance { get; set; }
+
+        public int bankAccountId { get; set; }
+
+        public string currencyName { get; set; }
+        
+        public string status { get; set; }
+
+
+        //[Required]
+       // public string ClientLogin { get; set; }
     }
 }

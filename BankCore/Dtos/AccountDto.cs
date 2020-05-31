@@ -9,16 +9,13 @@ namespace BankCore.Dtos
     {
         //[Required]
         [DataType(DataType.Text)]
-        public string Login { get; set; }
+        public string login { get; set; }
         //[Required]
-        public string Password { get; set; }
-        public string NewPassword { get; set; }
-        //[Required]
-        public string First_name { get; set; }
-        public string NewFirst_name { get; set; }
-        //[Required]
-        public string Last_name { get; set; }
-        public string NewLastName { get; set; }
+        public string password { get; set; }
+    
+        public string firstName { get; set; }
+    
+        public string lastName { get; set; }
 
     }
 }

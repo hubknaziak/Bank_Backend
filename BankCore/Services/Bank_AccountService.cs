@@ -20,9 +20,9 @@ namespace BankCore.Services
             // this.secretKey = secretKey;
         }
 
-        public async Task<bool> BlockBankAccount(int Id_Bank_Account, CancellationToken cancellationToken)
+        public async Task<bool> BlockBankAccount(Bank_AccountDto bank_AccountDto, CancellationToken cancellationToken)
         {
-            return await repository.BlockBankAccount(Id_Bank_Account, cancellationToken);
+            return await repository.BlockBankAccount(bank_AccountDto, cancellationToken);
         }
 
         public async Task<bool> UnblockBankAccount(int Id_Bank_Account, CancellationToken cancellationToken)
@@ -35,20 +35,25 @@ namespace BankCore.Services
             return await repository.CheckAccountAmount(Id_Bank_Account, cancellationToken);
         }
 
-        public async Task<bool> CreateBankAccount(Bank_AccountDto bank_AccountDto, CancellationToken cancellationToken)
+        public async Task<object> CreateBankAccount(string login, Bank_AccountDto bank_AccountDto, CancellationToken cancellationToken)
         {
             return await repository.CreateBankAccount(new Bank_Account
             {
                 Opening_Date = DateTime.Now,
-                Account_Balance = decimal.Zero,
-                Currency = bank_AccountDto.Currency,
+                Account_Balance = bank_AccountDto.balance,
+                Currency = bank_AccountDto.currencyId,
                 Status = "active"
-            }, bank_AccountDto, cancellationToken);
+            }, bank_AccountDto, login, cancellationToken);
         }
 
-        public async Task<Tuple<int, IEnumerable<Bank_Account>>> ShowBankAccounts(int takeCount, int skipCount, int id_client, CancellationToken cancellationToken)
+        public async Task<bool> DeleteBankAccount(int id, CancellationToken cancellationToken)
         {
-            return await repository.ShowBankAccounts( takeCount,  skipCount,  id_client,  cancellationToken);
+            return await repository.DeleteBankAccount(id, cancellationToken);
+        }
+
+        public async Task< IEnumerable<Bank_AccountDto>> ShowBankAccounts(string login, CancellationToken cancellationToken)
+        {
+            return await repository.ShowBankAccounts(login, cancellationToken);
         }
     }
 }

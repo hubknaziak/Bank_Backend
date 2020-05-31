@@ -8,31 +8,34 @@ namespace BankCore.Dtos
 {
     public class TransferDto
     {
-        [Required]
+        public int transferId { get; set; }
+
         [DataType(DataType.Date)]
-        public DateTime Excecution_Date { get; set; }
+        public DateTime sendingDate { get; set; }
 
-        [Required]
+        [DataType(DataType.Date)]
+        public DateTime executionDate { get; set; }
+
         [StringLength(30)]
-        public string Title { get; set; }
-
-        [Required]
+        public string title { get; set; }
+      
         [StringLength(50)]
-        public string Receiver { get; set; }
+        public string receiver { get; set; }
 
 
-        [Required]
         [StringLength(100)]
-        public string Description { get; set; }
+        public string description { get; set; }
 
 
-        [Required]
-        public decimal Amount { get; set; }
+        public decimal amount { get; set; }
+        //public int Sender_Bank_Account { get; set; }
 
-        [Required]
-        public int Sender_Bank_Account { get; set; }
+        public int senderBankAccountId { get; set; }
 
-        [Required]
-        public int Receiver_Bank_Account { get; set; }
+        public int receiverBankAccountId { get; set; }
+
+        public bool isReceived { get; set; }
+
+        public string status { get; set; }
     }
 }

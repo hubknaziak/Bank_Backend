@@ -18,9 +18,9 @@ namespace BankCore.Repositories
 
         //Task<bool> VerifyAdminPassword(AccountDto user, CancellationToken cancellationToken);
 
-        Task<Tuple<int, IEnumerable<Account>>> ShowAllAccounts(int takeCount, int skipCount,  CancellationToken cancellationToken);   //DONE
+        Task<IEnumerable<GetClientDto>> ShowAllAccounts(CancellationToken cancellationToken);   //DONE
 
-        Task<bool> ModifyAccount(CreateAccountDto modifyAccountDto, CancellationToken cancellationToken);
+        Task<bool> ModifyAccount(GetClientDto clientDto, CancellationToken cancellationToken);
 
         Task<bool> ChangePassword(AccountDto user, CancellationToken cancellationToken);
 
@@ -28,7 +28,7 @@ namespace BankCore.Repositories
 
         Task<bool> UnblockAccount(string login, CancellationToken cancellationToken);
 
-        Task<object> GetAccount(int id_Account, CancellationToken cancellationToken);
+        Task<string> GetAccountType(string login, CancellationToken cancellationToken);
 
         Task<object> GetClientAccount(string login, CancellationToken cancellationToken);
 

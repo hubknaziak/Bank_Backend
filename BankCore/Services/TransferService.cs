@@ -18,9 +18,9 @@ namespace BankCore.Services
             this.repository = repository;
         }
 
-        public async Task<bool> CancelTransaction(int Id_Transfer, CancellationToken cancellationToken)
+        public async Task<bool> CancelTransaction(TransferDto transferDto, CancellationToken cancellationToken)
         {
-            return await repository.CancelTransaction(Id_Transfer, cancellationToken);
+            return await repository.CancelTransaction(transferDto, cancellationToken);
         }
 
 
@@ -30,9 +30,24 @@ namespace BankCore.Services
         }
 
 
-        public async Task<Tuple<int, IEnumerable<Currency>>> ShowCurrencies(int takeCount, int skipCount, CancellationToken cancellationToken)
+        public async Task< IEnumerable<CurrencyDto>> ShowCurrencies( CancellationToken cancellationToken)
         {
-            return await repository.ShowCurrencies(takeCount, skipCount, cancellationToken);
+            return await repository.ShowCurrencies( cancellationToken);
+        }
+
+        public async Task<object> GetTransfer(int transferId, CancellationToken cancellationToken)
+        {
+            return await repository.GetTransfer(transferId, cancellationToken);
+        }
+
+        public async Task<IEnumerable<TransferDto>> GetTransfers(int bankAccountId, CancellationToken cancellationToken)
+        {
+            return await repository.GetTransfers(bankAccountId, cancellationToken);
+        }
+
+        public async Task<IEnumerable<TransferDto>> GetAdminTransfers(TransferRequestDto transferRequestDto, CancellationToken cancellationToken)
+        {
+            return await repository.GetAdminTransfers(transferRequestDto, cancellationToken);
         }
 
         public async Task<Tuple<int, IEnumerable<Transfer>>> ShowAwaitingTransfers(int takeCount, int skipCount, CancellationToken cancellationToken)
@@ -47,20 +62,49 @@ namespace BankCore.Services
         }
 
 
-        public async Task<bool> CreateTransfer(TransferDto transferDto, CancellationToken cancellationToken)
+        public async Task<bool> CreateTransfer(TransferDto transferDto, string login, CancellationToken cancellationToken)
         {
-            string stat = "in progress";
+            string stat = "executed";
+            //if(DateTime.Compare(transferDto.sendingDate, DateTime.Now.AddDays(1)) < 0)
+            //{
+            //    return false;
+            //}
+            if(transferDto.executionDate.CompareTo(transferDto.sendingDate) > 0)
+            {
+                stat = "in progress";
+            }
+            if (transferDto.executionDate.CompareTo(transferDto.sendingDate) < 0)
+            {
+                return false;
+            }
 
             return await repository.CreateTransfer(new Transfer
             {
-                Sending_Date = DateTime.Now,
-                Execution_Date = transferDto.Excecution_Date,
-                Title = transferDto.Title,
-                Receiver = transferDto.Receiver,
-                Description = transferDto.Description,
+                Sending_Date = transferDto.sendingDate,
+                Execution_Date = transferDto.executionDate,
+                Title = transferDto.title,
+                Receiver = transferDto.receiver,
+                Description = transferDto.description,
                 Status = stat,
-                Sender_Bank_Account = transferDto.Sender_Bank_Account,
-                Receiver_Bank_Account = transferDto.Receiver_Bank_Account
+                Amount = transferDto.amount,
+                Sender_Bank_Account = transferDto.senderBankAccountId,
+                Receiver_Bank_Account = transferDto.receiverBankAccountId
+            }, cancellationToken) ;
+        }
+
+        public async Task<bool> ExchangeMoney(CurrencyExchangeDto currencyExchangeDto, CancellationToken cancellationToken)
+        {
+            return await repository.ExchangeMoney(new Transfer
+            {
+                Sending_Date = DateTime.Now,
+                Execution_Date = DateTime.Now,
+                Title = "Currency exchange",
+                Receiver = "Myself",
+                Description = "Currency exchange",
+                Status = "executed",
+                Amount = currencyExchangeDto.amount,
+                Sender_Bank_Account = currencyExchangeDto.transferFrom,
+                Receiver_Bank_Account = currencyExchangeDto.transferTo
             }, cancellationToken);
         }
     }

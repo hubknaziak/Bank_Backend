@@ -31,10 +31,10 @@ namespace BankAPI.Controllers
         }
 
 
-        [HttpPost("createBankAccount")]
+        [HttpPost("{login}")]
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> CreateBankAccount([FromBody] Bank_AccountDto bank_AccountDto,
+        public async Task<ActionResult<Bank_AccountDto>> CreateBankAccount([FromRoute]string login, [FromBody] Bank_AccountDto bank_AccountDto,
            CancellationToken cancellationToken = default)
         {
             string l = HttpContext.GetLoginFromClaims();
@@ -46,20 +46,48 @@ namespace BankAPI.Controllers
                 return UnprocessableEntity("ERROR, Access denied");
             }
 
-            var success = await bank_AccountService.CreateBankAccount(bank_AccountDto, cancellationToken);
+            var bankAccount = await bank_AccountService.CreateBankAccount(login, bank_AccountDto, cancellationToken);
 
-            if (!success)
+            if (bankAccount == null)
             {
                 return UnprocessableEntity("ERROR, Bank account cannot be created");
             }
 
-            return Ok();
+            return Ok( new { bankAccount });
         }
 
-        [HttpPut("block")]
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteBankAccount([FromRoute]int id, CancellationToken cancellationToken)
+        {
+
+            string l = HttpContext.GetLoginFromClaims();
+
+            var access = await validateUserFilter.ValidateUser(l, cancellationToken);
+
+            if (access == "client" || access == "null")
+            {
+                return UnprocessableEntity("ERROR, Access denied");
+            }
+
+            var account = await bank_AccountService.DeleteBankAccount(id, cancellationToken);
+            if (!account)
+            {
+                return NotFound();
+            }
+
+            //_context.Accounts.Remove(account);
+            else
+            {
+                return (bool)account ? (IActionResult)NoContent() : NotFound();
+            }
+        }
+
+        [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> BlockBankAccount(int id_Bank_Account,
+        public async Task<IActionResult> UpdateBankAccount(Bank_AccountDto bank_AccountDto,
          CancellationToken cancellationToken = default)
         {
             string l = HttpContext.GetLoginFromClaims();
@@ -71,10 +99,10 @@ namespace BankAPI.Controllers
                 return UnprocessableEntity("ERROR, Access denied");
             }
 
-            var success = await bank_AccountService.BlockBankAccount(id_Bank_Account, cancellationToken);
+            var success = await bank_AccountService.BlockBankAccount(bank_AccountDto, cancellationToken);
             if (!success)
             {
-                return UnprocessableEntity("Failed to block an account");
+                return UnprocessableEntity("Failed to update an account");
             }
 
             return NoContent();
@@ -120,18 +148,14 @@ namespace BankAPI.Controllers
             return bank_Amount;
         }
 
-        [HttpGet("showBankAccounts")]
+        [HttpGet("{login}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<Bank_Account>>> ShowBankAccounts([FromQuery]int client,
-       [FromQuery] int takeCount, [FromQuery]int skipCount, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<IEnumerable<Bank_AccountDto>>> ShowBankAccounts([FromRoute] string login,
+            CancellationToken cancellationToken = default)
         {
-            if (takeCount < 1 || skipCount < 0)
-            {
-                return BadRequest("Failed to show bank accounts");
-            }
 
-            var bankAccounts = await bank_AccountService.ShowBankAccounts(takeCount, skipCount, client, cancellationToken);
+            var bankAccounts = await bank_AccountService.ShowBankAccounts(login, cancellationToken);
             if (bankAccounts == null)
             {
                 return BadRequest("Failed to show bank accounts");

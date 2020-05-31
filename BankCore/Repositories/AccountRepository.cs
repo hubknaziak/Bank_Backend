@@ -76,20 +76,20 @@ namespace BankCore.Repositories
         {
             var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme,
                 ClaimTypes.Name, ClaimTypes.Role);
-            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, accountDto.Login)); 
-            identity.AddClaim(new Claim(ClaimTypes.Name, accountDto.Login));
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, accountDto.login)); 
+            identity.AddClaim(new Claim(ClaimTypes.Name, accountDto.login));
 
             var redirect = string.Empty;
 
             var record = await context.Accounts
-                .SingleOrDefaultAsync(x => x.Login == accountDto.Login, cancellationToken);
+                .SingleOrDefaultAsync(x => x.Login == accountDto.login, cancellationToken);
 
             if(record == null)
             {
                 return "null";
             }
 
-            var verify = Crypto.VerifyHashedPassword(record.Password, accountDto.Password);
+            var verify = Crypto.VerifyHashedPassword(record.Password, accountDto.password);
 
             if(!verify)
             {
@@ -115,7 +115,7 @@ namespace BankCore.Repositories
                 }
 
                 identity.AddClaim(new Claim(ClaimTypes.Role, "Administrator"));
-                redirect = "Administrator";
+                redirect = "Admin";
             }
             else
             {
@@ -143,38 +143,52 @@ namespace BankCore.Repositories
 
         }
 
-        public async Task<Tuple<int, IEnumerable<Account>>> ShowAllAccounts(int takeCount, int skipCount, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GetClientDto>> ShowAllAccounts(CancellationToken cancellationToken)
         {
             var count = await context.Clients
                .CountAsync();
 
-            var clients = await context.Clients.ToArrayAsync(cancellationToken);
+            Client[] clients = new Client[count];
 
-            List<Account> accounts = null;
-            List<GetAccountDto> getAccounts = null;
+            clients = await context.Clients.OrderByDescending(x => x.Id_Client)
+                .AsNoTracking()
+                .ToArrayAsync(cancellationToken);
+
+            GetClientDto getClientDto = new GetClientDto();
+            Account [] account = new Account[count];
+            Account [] accounts = new Account[count];
+            GetClientDto [] getClients = new GetClientDto[count];
 
             for (int i = 0; i < count; i++)
             {
-                accounts = await context.Accounts.Where(x => x.Id_account == clients[i].Id_Client)
-                    .OrderByDescending(x => x.Id_account)
-                    .Skip(skipCount)
-                    .Take(takeCount)
-                    .AsNoTracking()
-                    .ToListAsync(cancellationToken);
+                account = await context.Accounts.Where(x => x.Id_account == clients[i].Id_Client)
+                    //.OrderByDescending(x => x.Id_account)
+                    //.AsNoTracking()
+                    .ToArrayAsync(cancellationToken);
+                accounts[i] = account[0];
             }
 
-            foreach (Account a in accounts)
+           /* for (int i = 0; i < count; i++)
             {
-                GetAccountDto getAccount = new GetAccountDto
-                {
-                    Login = a.Login,
-                    First_name = a.First_name,
-                    Last_name = a.Last_name,
-                };
-                getAccounts.Add(getAccount);
+                clients = await context.Clients.Where(x => x.Id_Client == clients[i].Id_Client)
+                    .OrderByDescending(x => x.Id_Client)
+                    .AsNoTracking()
+                    .ToArrayAsync(cancellationToken);
+            }*/
+
+            for(int i = 0; i < count; i++)
+            {
+                getClientDto = new GetClientDto();
+                getClientDto.login = accounts[i].Login;
+                getClientDto.firstName = accounts[i].First_name;
+                getClientDto.lastName = accounts[i].Last_name;
+                getClientDto.status = clients[i].Status;
+                getClientDto.phoneNumber = clients[i].Address;
+                getClientDto.address = clients[i].Address;
+                getClients[i] = getClientDto;
             }
 
-            return Tuple.Create(count, getAccounts as IEnumerable<Account>);
+            return  getClients as IEnumerable<GetClientDto>;
         }
 
         /*public async Task<bool> VerifyPassword(AccountDto accountDto, CancellationToken cancellationToken)
@@ -215,10 +229,10 @@ namespace BankCore.Repositories
              }
          }*/
 
-        public async Task<bool> ModifyAccount(CreateAccountDto modifyAccountDto, CancellationToken cancellationToken)
+        public async Task<bool> ModifyAccount(GetClientDto clientDto, CancellationToken cancellationToken)
         {
             var record = await context.Accounts
-                .SingleOrDefaultAsync(x => x.Login == modifyAccountDto.AccountDto.Login, cancellationToken);
+                .SingleOrDefaultAsync(x => x.Login == clientDto.login, cancellationToken);
 
             var client = await context.Clients
                .SingleOrDefaultAsync(x => x.Id_Client == record.Id_account, cancellationToken);
@@ -228,26 +242,27 @@ namespace BankCore.Repositories
                 return false;
             }*/
 
-            record.Password = Crypto.HashPassword(modifyAccountDto.AccountDto.NewPassword);
+            //record.Password = Crypto.HashPassword(modifyAccountDto.AccountDto.NewPassword);
             //record.Login = modifyAccountDto.AccountDto.NewLogin;
-            record.First_name = modifyAccountDto.AccountDto.NewFirst_name;
-            record.Last_name = modifyAccountDto.AccountDto.NewLastName;
-            client.Phone_Number = modifyAccountDto.ClientDto.NewPhone_Number;
-            client.Address = modifyAccountDto.ClientDto.NewAddress;
+            record.First_name = clientDto.firstName;
+            record.Last_name = clientDto.lastName;
+            client.Status = clientDto.status;
+            client.Phone_Number = clientDto.phoneNumber;
+            client.Address = clientDto.address;
             return await context.SaveChangesAsync(cancellationToken) > 0;
         }
 
         public async Task<bool> ChangePassword(AccountDto accountDto, CancellationToken cancellationToken)
         {
             var record = await context.Accounts
-                .SingleOrDefaultAsync(x => x.Login == accountDto.Login, cancellationToken);
+                .SingleOrDefaultAsync(x => x.Login == accountDto.login, cancellationToken);
 
-            if (!Crypto.VerifyHashedPassword(record.Password, accountDto.Password))
+            if (!Crypto.VerifyHashedPassword(record.Password, accountDto.password))
             {
                 return false;
             }
 
-            record.Password = Crypto.HashPassword(accountDto.NewPassword);
+         ////   record.Password = Crypto.HashPassword(accountDto.NewPassword);
     
             return await context.SaveChangesAsync(cancellationToken) > 0;
         }
@@ -279,26 +294,31 @@ namespace BankCore.Repositories
         }
 
 
-        public async Task<object> GetAccount(int id_Account, 
+        public async Task<string> GetAccountType(string login, 
             CancellationToken cancellationToken)
         {
             var account = await context.Accounts
-              .SingleOrDefaultAsync(x => x.Id_account == id_Account,
+              .SingleOrDefaultAsync(x => x.Login == login,
                   cancellationToken);
 
-            if (account == null)
-            {
-                return null;
-            }
+            var client = await context.Clients
+              .SingleOrDefaultAsync(x => x.Id_Client == account.Id_account,
+                  cancellationToken);
 
-            GetAccountDto getAccount = new GetAccountDto
+            var admin = await context.Administrators
+              .SingleOrDefaultAsync(x => x.Id_Administrator == account.Id_account,
+                  cancellationToken);
+
+            if(client == null && admin != null)
             {
-                Login = account.Login,
-                First_name = account.First_name,
-                Last_name = account.Last_name,
-            };
+                return "Admin";
+            }
+            else if(client != null && admin == null)
+            {
+                return "Client";
+            }
            
-            return getAccount;
+            return "null";
         }
 
         public async Task<object> GetClientAccount(string login, CancellationToken cancellationToken)
@@ -317,21 +337,17 @@ namespace BankCore.Repositories
                 return null;
             }
 
-            GetClientDto getClientDto = new GetClientDto
+            GetClientDto getClient = new GetClientDto
             {
-                Phone_Number = client.Phone_Number,
-                Address = client.Address
-            };
-
-            GetAccountDto getAccount = new GetAccountDto
-            {
-                Login = account.Login,
-                First_name = account.First_name,
-                Last_name = account.Last_name,
-                getClientDto = getClientDto
+                login = account.Login,
+                firstName = account.First_name,
+                lastName = account.Last_name,
+                status = client.Status,
+                phoneNumber = client.Phone_Number,
+                address = client.Address
             };
              
-            return getAccount;
+            return getClient;
         }
 
         public async Task<object> GetAdminAccount(string login, CancellationToken cancellationToken)
@@ -349,20 +365,17 @@ namespace BankCore.Repositories
                 return null;
             }
 
+
             GetAdminDto getAdmin = new GetAdminDto
             {
-                Employment_Date = admin.Employment_Date
+                login = account.Login,
+                firstName = account.First_name,
+                lastName = account.Last_name,
+                status = admin.Status,
+                employmentDate = admin.Employment_Date
             };
 
-            GetAccountDto getAccount = new GetAccountDto
-            {
-                Login = account.Login,
-                First_name = account.First_name,
-                Last_name = account.Last_name,
-               getAdminDto = getAdmin
-            };
-
-            return getAccount;
+            return getAdmin;
         }
 
         public async Task<object> DeleteAccount(string login,
