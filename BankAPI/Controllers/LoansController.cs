@@ -108,10 +108,10 @@ namespace BankAPI.Controllers
             return Ok(loanApplications);
         }
 
-        [HttpGet("application/admin/{login}")]
+        [HttpGet("application/admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<AdminLoanApplicationDto>>> GetAdminLoanApplications([FromRoute]string login,
+        public async Task<ActionResult<IEnumerable<AdminLoanApplicationDto>>> GetAdminLoanApplications(
          CancellationToken cancellationToken = default)
         {
             string l = HttpContext.GetLoginFromClaims();
@@ -123,10 +123,10 @@ namespace BankAPI.Controllers
                 return UnprocessableEntity("ERROR, Access denied");
             }
 
-            var loanApplications = await loanService.GetAdminLoanApplications(login, cancellationToken);
+            var loanApplications = await loanService.GetAdminLoanApplications(l, cancellationToken);
             if (loanApplications == null)
             {
-                return BadRequest("Failed to check loan applocations");
+                return BadRequest("Failed to check loan applocations, or there are no loan applications for given administrator");
             }
 
             return Ok( loanApplications );

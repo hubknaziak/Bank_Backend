@@ -21,6 +21,11 @@ namespace BankCore.Repositories
             var record = await context.Bank_Accounts
               .SingleOrDefaultAsync(x => x.Id_Bank_Account == bank_AccountDto.bankAccountId, cancellationToken);
 
+            if (record == null)
+            {
+                return false;
+            }
+
             record.Status = bank_AccountDto.status;
 
             return await context.SaveChangesAsync(cancellationToken) > 0;
@@ -31,6 +36,11 @@ namespace BankCore.Repositories
             var record = await context.Bank_Accounts
               .SingleOrDefaultAsync(x => x.Id_Bank_Account == Id_Bank_Account, cancellationToken);
 
+            if (record == null)
+            {
+                return false;
+            }
+
             record.Status = "active";
 
             return await context.SaveChangesAsync(cancellationToken) > 0;
@@ -40,6 +50,11 @@ namespace BankCore.Repositories
         {
             var record = await context.Bank_Accounts
               .SingleOrDefaultAsync(x => x.Id_Bank_Account == Id_Bank_Account, cancellationToken);
+
+            if (record == null)
+            {
+                return 0;
+            }
 
             return record.Account_Balance;
         }
@@ -102,6 +117,11 @@ namespace BankCore.Repositories
         {
             var account = await context.Accounts
              .SingleOrDefaultAsync(x => x.Login == login, cancellationToken);
+
+            if (account == null)
+            {
+                return null;
+            }
 
             var client = await context.Clients
              .SingleOrDefaultAsync(x => x.Id_Client == account.Id_account, cancellationToken);

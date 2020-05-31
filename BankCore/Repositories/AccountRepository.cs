@@ -234,6 +234,11 @@ namespace BankCore.Repositories
             var record = await context.Accounts
                 .SingleOrDefaultAsync(x => x.Login == clientDto.login, cancellationToken);
 
+            if (record == null)
+            {
+                return false;
+            }
+
             var client = await context.Clients
                .SingleOrDefaultAsync(x => x.Id_Client == record.Id_account, cancellationToken);
 
@@ -333,14 +338,14 @@ namespace BankCore.Repositories
               .SingleOrDefaultAsync(x => x.Login == login,
                   cancellationToken);
 
-            var client = await context.Clients
-              .SingleOrDefaultAsync(x => x.Id_Client == account.Id_account,
-                  cancellationToken);
-
             if (account == null)
             {
                 return null;
             }
+
+            var client = await context.Clients
+              .SingleOrDefaultAsync(x => x.Id_Client == account.Id_account,
+                  cancellationToken);
 
             GetClientDto getClient = new GetClientDto
             {
@@ -361,15 +366,15 @@ namespace BankCore.Repositories
               .SingleOrDefaultAsync(x => x.Login == login,
                   cancellationToken);
 
-            var admin = await context.Administrators
-              .SingleOrDefaultAsync(x => x.Id_Administrator == account.Id_account,
-                  cancellationToken);
-
             if (account == null)
             {
                 return null;
             }
 
+
+            var admin = await context.Administrators
+              .SingleOrDefaultAsync(x => x.Id_Administrator == account.Id_account,
+                  cancellationToken);
 
             GetAdminDto getAdmin = new GetAdminDto
             {

@@ -23,6 +23,11 @@ namespace BankCore.Repositories
             var transfer = await context.Transfers
               .SingleOrDefaultAsync(x => x.Id_Transfer == transferDto.transferId, cancellationToken);
 
+            if (transfer == null)
+            {
+                return false;
+            }
+
             var bankAccount = await context.Bank_Accounts
               .SingleOrDefaultAsync(x => x.Id_Bank_Account == transfer.Sender_Bank_Account, cancellationToken);
 
@@ -76,7 +81,7 @@ namespace BankCore.Repositories
             {
                 currencyDto = new CurrencyDto();
                 currencyDto.currencyId = currencies[i].Id_Currency;
-                currencyDto.name = currencies[i].Name;
+                currencyDto.currencyName = currencies[i].Name;
                 currencyDto.exchangeRate = currencies[i].Exchange_Rate;
                 currenciesDto[i] = currencyDto;
             }
@@ -140,10 +145,15 @@ namespace BankCore.Repositories
             return transfersDto as IEnumerable<TransferDto>;
         }
 
-        public async Task<IEnumerable<TransferDto>> GetAdminTransfers(TransferRequestDto transferRequestDto, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TransferDto>> GetAdminTransfers(string login,  DateTime sendingDate, CancellationToken cancellationToken)
         {
             var account = await context.Accounts
-               .SingleOrDefaultAsync(x => x.Login == transferRequestDto.login, cancellationToken);
+               .SingleOrDefaultAsync(x => x.Login == login, cancellationToken);
+
+            if(account == null)
+            {
+                return null;
+            }
 
             var client = await context.Clients
               .SingleOrDefaultAsync(x => x.Id_Client == account.Id_account, cancellationToken);
@@ -191,7 +201,7 @@ namespace BankCore.Repositories
             {
                 if (allTransfers[i] != null)
                 {
-                    if (allTransfers[i].Status == "in progress" && allTransfers[i].Sending_Date.Date == transferRequestDto.sendingDate.Date)
+                    if (allTransfers[i].Status == "in progress" && allTransfers[i].Sending_Date.Date == sendingDate.Date)
                     {
                         transferDto = new TransferDto();
                         transferDto.transferId = allTransfers[i].Id_Transfer;

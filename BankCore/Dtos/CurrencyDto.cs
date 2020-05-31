@@ -8,7 +8,7 @@ namespace BankCore.Dtos
     {
         public int currencyId { get; set; }
 
-        public string name { get; set; }
+        public string currencyName { get; set; }
 
         public decimal exchangeRate { get; set; }
     }

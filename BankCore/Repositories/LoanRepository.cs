@@ -21,6 +21,11 @@ namespace BankCore.Repositories
             var bankAccount = await context.Bank_Accounts
                .SingleOrDefaultAsync(x => x.Id_Bank_Account == loan_ApplicationDto.bankAccountId, cancellationToken);
 
+            if (bankAccount == null)
+            {
+                return false;
+            }
+
             var client = await context.Clients
               .SingleOrDefaultAsync(x => x.Id_Client == bankAccount.Client, cancellationToken);
 
@@ -87,6 +92,11 @@ namespace BankCore.Repositories
             var account = await context.Accounts
                .SingleOrDefaultAsync(x => x.Login == login, cancellationToken);
 
+            if (account == null)
+            {
+                return null;
+            }
+
             var client = await context.Clients
               .SingleOrDefaultAsync(x => x.Id_Client == account.Id_account, cancellationToken);
 
@@ -129,13 +139,13 @@ namespace BankCore.Repositories
                 return null;
             }
 
-            var client = await context.Clients
-              .SingleOrDefaultAsync(x => x.Id_Client == account.Id_account, cancellationToken);
+            var admin = await context.Administrators
+              .SingleOrDefaultAsync(x => x.Id_Administrator == account.Id_account, cancellationToken);
 
             //var count = await context.Loan_Applications
             //  .CountAsync(x => x.Client == id_client);
 
-            var loanApplications = await context.Loan_Applications.Where(x => x.Client == client.Id_Client && x.Status == "awaiting response")
+            var loanApplications = await context.Loan_Applications.Where(x => x.Administrator == admin.Id_Administrator && x.Status == "awaiting response")
                 .OrderByDescending(x => x.Submission_Date)
                 .AsNoTracking()
                 .ToArrayAsync(cancellationToken);
@@ -144,14 +154,24 @@ namespace BankCore.Repositories
 
             AdminLoanApplicationDto[] adminLoan_ApplicationsDto = new AdminLoanApplicationDto[size];
             AdminLoanApplicationDto adminLoan_ApplicationDto = new AdminLoanApplicationDto();
+            Client [] clients = new Client[size];
 
-            for (int i = 0; i < size; i++)
+            int index = 0;
+            foreach(Loan_Application loan in loanApplications)
+            {
+                var client = await context.Clients
+             .SingleOrDefaultAsync(x => x.Id_Client == loan.Client, cancellationToken);
+                clients[index] = client;
+                index++;
+            }
+
+            for(int i = 0; i < size; i++)
             {
                 adminLoan_ApplicationDto = new AdminLoanApplicationDto();
                 adminLoan_ApplicationDto.loanApplicationId = loanApplications[i].Id_Loan_Application;
                 adminLoan_ApplicationDto.firstName = account.First_name;
                 adminLoan_ApplicationDto.lastName = account.Last_name;
-                adminLoan_ApplicationDto.phoneNumber = client.Phone_Number;
+                adminLoan_ApplicationDto.phoneNumber = clients[i].Phone_Number;
                 adminLoan_ApplicationDto.submissionDate = loanApplications[i].Submission_Date;
                 adminLoan_ApplicationDto.amount = loanApplications[i].Amount;
                 adminLoan_ApplicationDto.installmentsCount = loanApplications[i].Installments_Count;
@@ -160,7 +180,6 @@ namespace BankCore.Repositories
                 adminLoan_ApplicationsDto[i] = adminLoan_ApplicationDto;
             }
 
-
             return adminLoan_ApplicationsDto as IEnumerable<AdminLoanApplicationDto>;
         }
 
@@ -168,6 +187,11 @@ namespace BankCore.Repositories
         {
             var account = await context.Accounts
               .SingleOrDefaultAsync(x => x.Login == login, cancellationToken);
+
+            if (account == null)
+            {
+                return null;
+            }
 
             var client = await context.Clients
               .SingleOrDefaultAsync(x => x.Id_Client == account.Id_account, cancellationToken);
@@ -224,7 +248,12 @@ namespace BankCore.Repositories
             var loan_Application = await context.Loan_Applications
                 .SingleOrDefaultAsync(x => x.Id_Loan_Application == adminLoanApplicationDto.loanApplicationId, cancellationToken);
 
-            if(adminLoanApplicationDto.status == "rejected")
+            if (loan_Application == null)
+            {
+                return false;
+            }
+
+            if (adminLoanApplicationDto.status == "rejected")
             {
                 loan_Application.Status = "rejected";
                 try

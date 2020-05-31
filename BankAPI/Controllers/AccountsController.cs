@@ -320,27 +320,50 @@ namespace BankAPI.Controllers
             return Ok(result);
         }
 
-       /* //[AllowAnonymous]
-        [HttpGet]
-        [ProducesResponseType(typeof(GetClientDto), StatusCodes.Status200OK)]
+        [HttpGet("client/{login}")]
+        [ProducesResponseType(typeof(GetAccountDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<GetClientDto>> GetAdminAccount(CancellationToken cancellationToken = default)
+        public async Task<ActionResult<GetAccountDto>> GetClientData(string login, CancellationToken cancellationToken = default)
         {
-            string login = HttpContext.GetLoginFromClaims();
+            string l = HttpContext.GetLoginFromClaims();
 
-            var result = await accountService.GetAdminAccount(login, cancellationToken);
+            var access = await validateUserFilter.ValidateUser(l, cancellationToken);
+
+            if (access == "client" || access == "null")
+            {
+                return UnprocessableEntity("ERROR, Access denied");
+            }
+
+            var result = await accountService.GetClientAccount(login, cancellationToken);
 
             if (result == null)
             {
                 return NotFound();
             }
+            return Ok( result );
+        }
 
-            else if (result is string)
-            {
-                return Unauthorized(result);
-            }
-            return Ok(result);
-        }*/
+        /* //[AllowAnonymous]
+         [HttpGet]
+         [ProducesResponseType(typeof(GetClientDto), StatusCodes.Status200OK)]
+         [ProducesResponseType(StatusCodes.Status404NotFound)]
+         public async Task<ActionResult<GetClientDto>> GetAdminAccount(CancellationToken cancellationToken = default)
+         {
+             string login = HttpContext.GetLoginFromClaims();
+
+             var result = await accountService.GetAdminAccount(login, cancellationToken);
+
+             if (result == null)
+             {
+                 return NotFound();
+             }
+
+             else if (result is string)
+             {
+                 return Unauthorized(result);
+             }
+             return Ok(result);
+         }*/
 
         /*private bool AccountExists(int id)
         {

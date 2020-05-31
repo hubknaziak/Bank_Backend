@@ -201,7 +201,7 @@ namespace BankAPI.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<TransferDto>>> GetTransfers([FromBody]TransferRequestDto transferRequestDto,
+        public async Task<ActionResult<IEnumerable<TransferDto>>> GetTransfers([FromQuery]string login, [FromQuery] DateTime sendingDate,
            CancellationToken cancellationToken = default)
         {
             string l = HttpContext.GetLoginFromClaims();
@@ -213,7 +213,7 @@ namespace BankAPI.Controllers
                 return UnprocessableEntity("ERROR, Access denied");
             }
 
-            var transfer = await transferService.GetAdminTransfers(transferRequestDto, cancellationToken);
+            var transfer = await transferService.GetAdminTransfers(login, sendingDate, cancellationToken);
             if (transfer == null)
             {
                 return BadRequest("Transfer do not exists or is has been executed");

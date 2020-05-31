@@ -45,9 +45,9 @@ namespace BankCore.Services
             return await repository.GetTransfers(bankAccountId, cancellationToken);
         }
 
-        public async Task<IEnumerable<TransferDto>> GetAdminTransfers(TransferRequestDto transferRequestDto, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TransferDto>> GetAdminTransfers(string login,  DateTime sendingDate, CancellationToken cancellationToken)
         {
-            return await repository.GetAdminTransfers(transferRequestDto, cancellationToken);
+            return await repository.GetAdminTransfers(login, sendingDate, cancellationToken);
         }
 
         public async Task<Tuple<int, IEnumerable<Transfer>>> ShowAwaitingTransfers(int takeCount, int skipCount, CancellationToken cancellationToken)
