@@ -107,7 +107,7 @@ namespace BankCore.Repositories
                    .Select(x => x.Status)
                    .SingleAsync();
 
-                if (status != "Active")
+                if (status != "active")
                 {
                     //ModelState.AddModelError("Login", "Account is inactive!");
                     //return Page();
@@ -124,7 +124,7 @@ namespace BankCore.Repositories
                     .Select(x => x.Status)
                     .SingleAsync();
 
-                if (status != "Active")
+                if (status != "active")
                 {
                     //ModelState.AddModelError("Login", "Account is inactive!");
                     //return Page();
@@ -153,6 +153,11 @@ namespace BankCore.Repositories
             clients = await context.Clients.OrderByDescending(x => x.Id_Client)
                 .AsNoTracking()
                 .ToArrayAsync(cancellationToken);
+
+            if(clients == null)
+            {
+                return null;
+            }
 
             GetClientDto getClientDto = new GetClientDto();
             Account [] account = new Account[count];
@@ -242,12 +247,17 @@ namespace BankCore.Repositories
             var client = await context.Clients
                .SingleOrDefaultAsync(x => x.Id_Client == record.Id_account, cancellationToken);
 
+            if (client == null)
+            {
+                return false;
+            }
+
             /*if (!Crypto.VerifyHashedPassword(record.Password, modifyAccountDto.AccountDto.Password))
             {
                 return false;
             }*/
 
-            //record.Password = Crypto.HashPassword(modifyAccountDto.AccountDto.NewPassword);
+            if(clientDto.password != null) record.Password = Crypto.HashPassword(clientDto.password);
             //record.Login = modifyAccountDto.AccountDto.NewLogin;
             record.First_name = clientDto.firstName;
             record.Last_name = clientDto.lastName;
@@ -280,7 +290,7 @@ namespace BankCore.Repositories
             var client = await context.Clients
                 .SingleOrDefaultAsync(x => x.Id_Client == record.Id_account, cancellationToken);
 
-            client.Status = "Inactive";
+            client.Status = "inactive";
 
             return await context.SaveChangesAsync(cancellationToken) > 0;
         }
@@ -293,7 +303,7 @@ namespace BankCore.Repositories
             var client = await context.Clients
                 .SingleOrDefaultAsync(x => x.Id_Client == record.Id_account, cancellationToken);
 
-            client.Status = "Active";
+            client.Status = "active";
 
             return await context.SaveChangesAsync(cancellationToken) > 0;
         }

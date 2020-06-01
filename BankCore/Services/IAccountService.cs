@@ -22,7 +22,7 @@ namespace BankCore.Services
 
         Task<bool> ModifyAccount(GetClientDto clientDto, CancellationToken cancellationToken);
 
-        Task<bool> ChangePassword(AccountDto user, CancellationToken cancellationToken);
+       // Task<bool> ChangePassword(GetClinetDto clientDto, CancellationToken cancellationToken);
 
         Task<bool> BlockAccount(string login, CancellationToken cancellationToken);
 

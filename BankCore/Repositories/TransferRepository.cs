@@ -50,6 +50,11 @@ namespace BankCore.Repositories
             var count = await context.Transfers
               .CountAsync(x => x.Sender_Bank_Account == sender_Bank_Account || x.Receiver_Bank_Account == sender_Bank_Account);
 
+            if (count == 0)
+            {
+                return null;
+            }
+
             var transfers = await context.Transfers.Where(x => x.Sender_Bank_Account == sender_Bank_Account || x.Receiver_Bank_Account == sender_Bank_Account)
                 .OrderByDescending(x => x.Execution_Date)
                 .Skip(skipCount)
@@ -65,6 +70,11 @@ namespace BankCore.Repositories
         {
             var count = await context.Currencies
                .CountAsync();
+
+            if (count == 0)
+            {
+                return null;
+            }
 
             Currency[] currencies = new Currency[count];
             CurrencyDto [] currenciesDto = new CurrencyDto[count];
@@ -96,7 +106,7 @@ namespace BankCore.Repositories
                .SingleOrDefaultAsync(x => x.Id_Transfer == transferId, cancellationToken);
 
 
-            if(transfer == null || transfer.Status == "executed")
+            if(transfer == null || transfer.Status == "executed" || transfer.Status == "cancelled")
             {
                 return null;
             }
@@ -120,6 +130,11 @@ namespace BankCore.Repositories
                 .OrderByDescending(x => x.Sending_Date)
                 .AsNoTracking()
                 .ToArrayAsync(cancellationToken);
+
+            if (transfers == null)
+            {
+                return null;
+            }
 
             int size = transfers.Length;
 
@@ -235,7 +250,12 @@ namespace BankCore.Repositories
             var count = await context.Transfers.Where(x => x.Status.Equals("in progress"))
                .CountAsync();
 
-            
+            if (count == 0)
+            {
+                return null;
+            }
+
+
             var transfers = await context.Transfers.Where(x => x.Status.Equals("in progress"))
                  .OrderByDescending(x => x.Execution_Date)
                  .Skip(skipCount)
@@ -252,6 +272,11 @@ namespace BankCore.Repositories
               .OrderByDescending(x => x.Execution_Date)
               .AsNoTracking()
               .ToListAsync(cancellationToken);
+
+            if (transfers == null)
+            {
+                return false;
+            }
 
             foreach (var t in transfers)
             {

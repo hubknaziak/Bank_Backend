@@ -168,7 +168,7 @@ namespace BankAPI.Controllers
             var transfer = await transferService.GetTransfer(transferId, cancellationToken);
             if (transfer == null)
             {
-                return BadRequest("Transfer do not exists or is has been executed");
+                return NoContent();
             }
 
             return Ok(transfer );

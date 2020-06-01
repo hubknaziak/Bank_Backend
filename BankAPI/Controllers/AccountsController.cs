@@ -59,20 +59,21 @@ namespace BankAPI.Controllers
             return Ok();
         }
 
+        [AllowAnonymous]
         [HttpPost("register/admin")]
         [ProducesResponseType(typeof(string), StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> RegisterAdmin([FromBody] AdministratorDto administratorDto,
           CancellationToken cancellationToken = default)
         {
-            string login = HttpContext.GetLoginFromClaims();
+            /*string login = HttpContext.GetLoginFromClaims();
 
             var access = await validateUserFilter.ValidateUser(login, cancellationToken);
 
             if (access == "client" || access == "null")
             {
                 return UnprocessableEntity("ERROR, Access denied");
-            }
+            }*/
 
             var response = await accountService.CreateAdminAccount(administratorDto, cancellationToken);
 
@@ -127,20 +128,20 @@ namespace BankAPI.Controllers
             return NoContent();
         }
 
-        [HttpPut("change")]
+        /*[HttpPut("change")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> ChangePassword(AccountDto accountDto,
+        public async Task<IActionResult> ChangePassword(GetClientDto clientDto,
            CancellationToken cancellationToken = default)
         {
-            var success = await accountService.ChangePassword(accountDto, cancellationToken);
+            var success = await accountService.ChangePassword(clientDto, cancellationToken);
             if (!success)
             {
                 return UnprocessableEntity("Failed to change password");
             }
 
             return NoContent();
-        }
+        }*/
 
         [HttpPut("block")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

@@ -20,5 +20,10 @@ namespace BankCore.Models
         [Required]
         [StringLength(30)]
         public string Status { get; set; }
+
+
+        public virtual Account IdAdministratorNavigation { get; set; }
+        public virtual ICollection<Loan> Loan { get; set; }
+        public virtual ICollection<Loan_Application> LoanApplication { get; set; }
     }
 }

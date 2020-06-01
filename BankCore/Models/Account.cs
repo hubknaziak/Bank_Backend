@@ -19,5 +19,9 @@ namespace BankCore.Models
         public string First_name { get; set; }
         [Required]
         public string Last_name { get; set; }
+
+
+        public virtual Administrator Administrator { get; set; }
+        public virtual Client Client { get; set; }
     }
 }

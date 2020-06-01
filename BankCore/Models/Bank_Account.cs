@@ -32,5 +32,13 @@ namespace BankCore.Models
         [InverseProperty("Bank_Accounts")]
         public int Client { get; set; }
 
+
+
+        public virtual Client ClientNavigation { get; set; }
+        public virtual Currency CurrencyNavigation { get; set; }
+        public virtual ICollection<Loan> Loan { get; set; }
+        public virtual ICollection<Loan_Application> LoanApplication { get; set; }
+        public virtual ICollection<Transfer> TransferReceiverBankAccountNavigation { get; set; }
+        public virtual ICollection<Transfer> TransferSenderBankAccountNavigation { get; set; }
     }
 }

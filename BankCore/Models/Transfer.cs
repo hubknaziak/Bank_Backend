@@ -50,5 +50,9 @@ namespace BankCore.Models
         [InverseProperty("Transfers")]
         public int Receiver_Bank_Account { get; set; }
 
+
+        public virtual Bank_Account ReceiverBankAccountNavigation { get; set; }
+        public virtual Bank_Account SenderBankAccountNavigation { get; set; }
+
     }
 }

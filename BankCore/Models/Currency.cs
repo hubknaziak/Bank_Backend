@@ -16,5 +16,8 @@ namespace BankCore.Models
 
         [Required]
         public decimal Exchange_Rate { get; set; }
+
+
+        public virtual ICollection<Bank_Account> BankAccount { get; set; }
     }
 }

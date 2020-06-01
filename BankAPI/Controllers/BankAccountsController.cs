@@ -18,13 +18,13 @@ namespace BankAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class Bank_AccountsController : ControllerBase
+    public class BankAccountsController : ControllerBase
     {
         private readonly IBank_AccountService bank_AccountService;
 
         private readonly IValidateUserFilter validateUserFilter;
 
-        public Bank_AccountsController(IBank_AccountService bank_AccountService, IValidateUserFilter validateUserFilter)
+        public BankAccountsController(IBank_AccountService bank_AccountService, IValidateUserFilter validateUserFilter)
         {
             this.bank_AccountService = bank_AccountService;
             this.validateUserFilter = validateUserFilter;

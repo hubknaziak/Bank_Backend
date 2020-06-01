@@ -46,7 +46,7 @@ namespace BankCore.Services
             {
                 Phone_Number = clientDto.phoneNumber,
                 Address = clientDto.address,
-                Status = "Active"
+                Status = "active"
             }, cancellationToken) 
             ;
         }
@@ -67,7 +67,7 @@ namespace BankCore.Services
             }, new Administrator
             {
                 Employment_Date = administratorDto.employmentDate,
-                Status = "Active"
+                Status = "active"
             }, cancellationToken)
             ;
         }

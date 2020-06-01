@@ -46,5 +46,13 @@ namespace BankCore.Models
         [ForeignKey("Id_Bank_Account")]
         [InverseProperty("Loan_Applications")]
         public int Bank_Account { get; set; }
+
+
+
+        public virtual Administrator AdministratorNavigation { get; set; }
+
+        public virtual Bank_Account BankAccountNavigation { get; set; }
+
+        public virtual Client ClientNavigation { get; set; }
     }
 }

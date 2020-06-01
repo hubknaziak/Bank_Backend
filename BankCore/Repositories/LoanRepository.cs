@@ -77,6 +77,11 @@ namespace BankCore.Repositories
             var count = await context.Loan_Applications
                .CountAsync(x => x.Administrator == administrator);
 
+            if (count == 0)
+            {
+                return null;
+            }
+
             var loanApplications = await context.Loan_Applications.Where(x => x.Administrator == administrator)
                 .OrderByDescending(x => x.Decicion_Date)
                 .Skip(skipCount)

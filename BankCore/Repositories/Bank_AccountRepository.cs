@@ -83,6 +83,14 @@ namespace BankCore.Repositories
                 return false;
             }
 
+            var client = await context.Clients
+               .SingleOrDefaultAsync(x => x.Id_Client == record.Id_account, cancellationToken);
+
+            if (client == null)
+            {
+                return false;
+            }
+
             var currency = await context.Currencies
                .SingleOrDefaultAsync(x => x.Id_Currency == bank_AccountDto.currencyId, cancellationToken);
 
