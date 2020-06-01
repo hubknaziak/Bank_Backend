@@ -28,7 +28,6 @@ namespace BankCore.Dtos
 
 
         public decimal amount { get; set; }
-        //public int Sender_Bank_Account { get; set; }
 
         public int senderBankAccountId { get; set; }
 

@@ -7,8 +7,6 @@ namespace BankCore.Dtos
 {
     public class ClientDto : AccountDto
     {
-
-        //[Required]
         [StringLength(12)]
         public string phoneNumber { get; set; }
 

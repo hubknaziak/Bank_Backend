@@ -16,13 +16,10 @@ namespace BankCore.Services
 
         Task<string> VerifyPassword(AccountDto user, CancellationToken cancellationToken);
 
-        // Task<bool> VerifyAdminPassword(AccountDto user, CancellationToken cancellationToken);
 
         Task<IEnumerable<GetClientDto>> ShowAllAccounts(CancellationToken cancellationToken);
 
         Task<bool> ModifyAccount(GetClientDto clientDto, CancellationToken cancellationToken);
-
-       // Task<bool> ChangePassword(GetClinetDto clientDto, CancellationToken cancellationToken);
 
         Task<bool> BlockAccount(string login, CancellationToken cancellationToken);
 

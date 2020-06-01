@@ -38,7 +38,6 @@ namespace BankCore.Services
             }
             return await repository.CreateClientAccount(new Account
             {
-                //Login = createUserDto.AccountDto.Login,
                 Password = Crypto.HashPassword(clientDto.password),
                 First_name = clientDto.firstName,
                 Last_name = clientDto.lastName
@@ -60,7 +59,6 @@ namespace BankCore.Services
             }
             return await repository.CreateAdminAccount(new Account
             {
-                //Login = createUserDto.AccountDto.Login,
                 Password = Crypto.HashPassword(administratorDto.password),
                 First_name = administratorDto.firstName,
                 Last_name = administratorDto.lastName
@@ -77,11 +75,7 @@ namespace BankCore.Services
             return await repository.VerifyPassword(userDto, cancellationToken);
         }
 
-        /*public async Task<bool> VerifyAdminPassword(AccountDto userDto, CancellationToken cancellationToken)
-        {
-            return await repository.VerifyAdminPassword(userDto, cancellationToken);
-        }*/
-
+      
         public async Task<IEnumerable<GetClientDto>> ShowAllAccounts(CancellationToken cancellationToken)
         {
             return await repository.ShowAllAccounts( cancellationToken);

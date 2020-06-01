@@ -62,7 +62,7 @@ namespace BankCore
                 entity.Property(e => e.Password)
                     .IsRequired()
                     .HasColumnName("Password")
-                    .HasMaxLength(32)
+                    .HasMaxLength(250)
                     .IsUnicode(false);
             });
 

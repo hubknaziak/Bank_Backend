@@ -14,7 +14,7 @@ namespace BankCore.Dtos
         public DateTime decicionDate { get; set; }
 
         [Required]
-        public decimal installmentsCount { get; set; } //DECIMAL
+        public decimal installmentsCount { get; set; } 
 
         [Required]
         public decimal amount { get; set; }

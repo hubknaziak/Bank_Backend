@@ -77,7 +77,7 @@ namespace BankAPI.Controllers
                 return NotFound();
             }
 
-            //_context.Accounts.Remove(account);
+           
             else
             {
                 return (bool)account ? (IActionResult)NoContent() : NotFound();
@@ -140,10 +140,6 @@ namespace BankAPI.Controllers
         CancellationToken cancellationToken = default)
         {
             var bank_Amount = await bank_AccountService.CheckAccountAmount(id_Bank_Account, cancellationToken);
-            /*if (bank_Account == null)
-            {
-                return UnprocessableEntity("Failed to check account amount");
-            }*/
 
             return bank_Amount;
         }

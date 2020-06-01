@@ -14,7 +14,7 @@ namespace BankCore.Dtos
 
         public decimal rateOfInterest { get; set; }
 
-        public decimal installmentsCount { get; set; } //DECIMAL
+        public decimal installmentsCount { get; set; } 
 
         public decimal installment { get; set; }
 

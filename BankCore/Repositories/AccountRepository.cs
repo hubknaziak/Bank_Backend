@@ -57,7 +57,6 @@ namespace BankCore.Repositories
             var newLogin = account.Id_account.ToString().PadLeft(9, '0');
 
             account.Login = newLogin;
-            //account.Id_account = record.Id_account + 1;
             admin.Id_Administrator = account.Id_account;
             context.Accounts.Add(account);
             context.Administrators.Add(admin);
@@ -109,8 +108,6 @@ namespace BankCore.Repositories
 
                 if (status != "active")
                 {
-                    //ModelState.AddModelError("Login", "Account is inactive!");
-                    //return Page();
                     return "null";
                 }
 
@@ -126,8 +123,6 @@ namespace BankCore.Repositories
 
                 if (status != "active")
                 {
-                    //ModelState.AddModelError("Login", "Account is inactive!");
-                    //return Page();
                     return "null";
                 }
 
@@ -136,9 +131,7 @@ namespace BankCore.Repositories
             }
 
             var principal = new ClaimsPrincipal(identity);
-            // await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal,
-            // new AuthenticationProperties { IsPersistent = false });
-            //return RedirectToPage(redirect);
+         
             return redirect;
 
         }
@@ -167,19 +160,10 @@ namespace BankCore.Repositories
             for (int i = 0; i < count; i++)
             {
                 account = await context.Accounts.Where(x => x.Id_account == clients[i].Id_Client)
-                    //.OrderByDescending(x => x.Id_account)
-                    //.AsNoTracking()
                     .ToArrayAsync(cancellationToken);
                 accounts[i] = account[0];
             }
 
-           /* for (int i = 0; i < count; i++)
-            {
-                clients = await context.Clients.Where(x => x.Id_Client == clients[i].Id_Client)
-                    .OrderByDescending(x => x.Id_Client)
-                    .AsNoTracking()
-                    .ToArrayAsync(cancellationToken);
-            }*/
 
             for(int i = 0; i < count; i++)
             {
@@ -188,7 +172,7 @@ namespace BankCore.Repositories
                 getClientDto.firstName = accounts[i].First_name;
                 getClientDto.lastName = accounts[i].Last_name;
                 getClientDto.status = clients[i].Status;
-                getClientDto.phoneNumber = clients[i].Address;
+                getClientDto.phoneNumber = clients[i].Phone_Number;
                 getClientDto.address = clients[i].Address;
                 getClients[i] = getClientDto;
             }
@@ -196,43 +180,6 @@ namespace BankCore.Repositories
             return  getClients as IEnumerable<GetClientDto>;
         }
 
-        /*public async Task<bool> VerifyPassword(AccountDto accountDto, CancellationToken cancellationToken)
-        {
-            var record = await context.Accounts
-                .SingleOrDefaultAsync(x => x.Login == accountDto.Login, cancellationToken);
-
-            var client = await context.Accounts
-                .SingleOrDefaultAsync(x => x.Id_account == record.Id_account, cancellationToken);
-
-            if(client != null)
-            {
-                return record != null &&
-               Crypto.VerifyHashedPassword(record.Password, accountDto.Password);
-            }
-            else
-            {
-                return false;
-            }
-        }*/
-
-        /* public async Task<bool> VerifyAdminPassword(AccountDto accountDto, CancellationToken cancellationToken)
-         {
-             var record = await context.Accounts
-                 .SingleOrDefaultAsync(x => x.Login == accountDto.Login, cancellationToken);
-
-             var admin = await context.Accounts
-                .SingleOrDefaultAsync(x => x.Id_account == record.Id_account, cancellationToken);
-
-             if (admin != null)
-             {
-                 return record != null &&
-                Crypto.VerifyHashedPassword(record.Password, accountDto.Password);
-             }
-             else
-             {
-                 return false;
-             }
-         }*/
 
         public async Task<bool> ModifyAccount(GetClientDto clientDto, CancellationToken cancellationToken)
         {
@@ -252,13 +199,9 @@ namespace BankCore.Repositories
                 return false;
             }
 
-            /*if (!Crypto.VerifyHashedPassword(record.Password, modifyAccountDto.AccountDto.Password))
-            {
-                return false;
-            }*/
+           
 
             if(clientDto.password != null) record.Password = Crypto.HashPassword(clientDto.password);
-            //record.Login = modifyAccountDto.AccountDto.NewLogin;
             record.First_name = clientDto.firstName;
             record.Last_name = clientDto.lastName;
             client.Status = clientDto.status;
@@ -276,9 +219,6 @@ namespace BankCore.Repositories
             {
                 return false;
             }
-
-         ////   record.Password = Crypto.HashPassword(accountDto.NewPassword);
-    
             return await context.SaveChangesAsync(cancellationToken) > 0;
         }
 

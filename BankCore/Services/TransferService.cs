@@ -65,10 +65,7 @@ namespace BankCore.Services
         public async Task<bool> CreateTransfer(TransferDto transferDto, string login, CancellationToken cancellationToken)
         {
             string stat = "executed";
-            //if(DateTime.Compare(transferDto.sendingDate, DateTime.Now.AddDays(1)) < 0)
-            //{
-            //    return false;
-            //}
+      
             if(transferDto.executionDate.CompareTo(transferDto.sendingDate) > 0)
             {
                 stat = "in progress";

@@ -17,8 +17,5 @@ namespace BankCore.Dtos
         
         public string status { get; set; }
 
-
-        //[Required]
-       // public string ClientLogin { get; set; }
     }
 }

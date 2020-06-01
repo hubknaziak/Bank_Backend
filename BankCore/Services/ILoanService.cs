@@ -10,11 +10,11 @@ namespace BankCore.Services
 {
     public interface ILoanService
     {
-        Task<bool> DiscardLoanApplication(int Id_Loan_Application, CancellationToken cancellationToken);   //update
+        Task<bool> DiscardLoanApplication(int Id_Loan_Application, CancellationToken cancellationToken);  
 
-        Task<bool> ConfirmLoanApplication(AdminLoanApplicationDto adminLoanApplicationDto, CancellationToken cancellationToken);   //update
+        Task<bool> ConfirmLoanApplication(AdminLoanApplicationDto adminLoanApplicationDto, CancellationToken cancellationToken);  
 
-        Task<bool> ApplyForLoan(Loan_ApplicationDto Loan_ApplicationDto, CancellationToken cancellationToken); //de facto create
+        Task<bool> ApplyForLoan(Loan_ApplicationDto Loan_ApplicationDto, CancellationToken cancellationToken);
 
         Task<Tuple<int, IEnumerable<Loan_Application>>> ShowAllLoanApplications(int takeCount, int skipCount, int administrator, CancellationToken cancellationToken);
 

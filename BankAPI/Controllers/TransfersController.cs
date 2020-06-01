@@ -53,8 +53,6 @@ namespace BankAPI.Controllers
                 return UnprocessableEntity("ERROR, Transfer cannot be done");
             }
 
-            //var token = operationService.GenerateJwt(createAccountDto.AccountDto);
-            //return Ok(new { token });
             return Ok();
         }
 
@@ -80,8 +78,6 @@ namespace BankAPI.Controllers
                 return UnprocessableEntity("ERROR, Transfer cannot be done");
             }
 
-            //var token = operationService.GenerateJwt(createAccountDto.AccountDto);
-            //return Ok(new { token });
             return Ok();
         }
 

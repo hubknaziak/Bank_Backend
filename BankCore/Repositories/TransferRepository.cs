@@ -31,7 +31,7 @@ namespace BankCore.Repositories
             var bankAccount = await context.Bank_Accounts
               .SingleOrDefaultAsync(x => x.Id_Bank_Account == transfer.Sender_Bank_Account, cancellationToken);
 
-            if (transfer.Status.Equals("in progress"))  //jesli transfer sie jeszcze nie wykonal
+            if (transfer.Status.Equals("in progress")) 
             {
                 transfer.Status = transferDto.status;
                 bankAccount.Account_Balance = bankAccount.Account_Balance + transfer.Amount;
@@ -194,19 +194,6 @@ namespace BankCore.Repositories
                 }
             }
 
-           /*int size = 0;
-            for (int i = 0; i < allTransfers.Length; index++)
-            {
-                if(allTransfers[i] != null)
-                {
-                    size++;
-                }
-            }*/
-            /*Transfer[] allTransfers = new Transfer[size];
-            for (int i = 0; i < size; index++)
-            {
-                allTransfers[i] = tempTransfers[i];
-            }*/
 
             TransferDto[] transfersDto = new TransferDto[index];
             TransferDto transferDto = new TransferDto();
@@ -396,6 +383,13 @@ namespace BankCore.Repositories
             senderAccount.Account_Balance = senderAccount.Account_Balance - (transfer.Amount * receiverCurrency.Exchange_Rate);
 
             receiverAccount.Account_Balance = receiverAccount.Account_Balance + (transfer.Amount * receiverCurrency.Exchange_Rate);
+
+            var transferId = context.Transfers
+            .OrderByDescending(x => x.Id_Transfer).FirstOrDefault();
+
+            if (transferId == null) transfer.Id_Transfer = 0;
+            else transfer.Id_Transfer = transferId.Id_Transfer + 1;
+
             context.Transfers.Add(transfer);
             try
             {

@@ -34,8 +34,8 @@ namespace BankCore.Repositories
             var administrators = await context.Administrators
                 .OrderByDescending(x => x.Id_Administrator)
                 .ToArrayAsync(cancellationToken);
-            var size = administrators.Length;               //ilosc kont admin
-            int[] numberOfApplications = new int[size];                  //tablica na ilosc wnioskow
+            var size = administrators.Length;               
+            int[] numberOfApplications = new int[size];                
             for(int i = 0; i < size; i++)
             {
                 var applications = await context.Loan_Applications.CountAsync(x => x.Administrator == administrators[i].Id_Administrator);
@@ -52,12 +52,6 @@ namespace BankCore.Repositories
                 }
             }
             var admin = administrators[index];
-
-            //var administrators = context.Administrators.ToArray<Administrator>(); //tablica administratorow
-            //var size = administrators.Length;               //ilosc kont admin
-            //var rand = new Random();
-            //int adminNumber = rand.Next(size);  //number of a random admin
-            //var admin = administrators[adminNumber]; //get a random admin
 
             loan_Application.Administrator = admin.Id_Administrator;
 
@@ -105,9 +99,6 @@ namespace BankCore.Repositories
             var client = await context.Clients
               .SingleOrDefaultAsync(x => x.Id_Client == account.Id_account, cancellationToken);
 
-            //var count = await context.Loan_Applications
-             //  .CountAsync(x => x.Client == id_client);
-
             var loanApplications = await context.Loan_Applications.Where(x => x.Client == client.Id_Client)
                 .OrderByDescending(x => x.Submission_Date)
                 .AsNoTracking()
@@ -147,8 +138,6 @@ namespace BankCore.Repositories
             var admin = await context.Administrators
               .SingleOrDefaultAsync(x => x.Id_Administrator == account.Id_account, cancellationToken);
 
-            //var count = await context.Loan_Applications
-            //  .CountAsync(x => x.Client == id_client);
 
             var loanApplications = await context.Loan_Applications.Where(x => x.Administrator == admin.Id_Administrator && x.Status == "awaiting response")
                 .OrderByDescending(x => x.Submission_Date)
@@ -200,9 +189,6 @@ namespace BankCore.Repositories
 
             var client = await context.Clients
               .SingleOrDefaultAsync(x => x.Id_Client == account.Id_account, cancellationToken);
-
-            //var count = await context.Loans
-            //   .CountAsync(x => x.Client == id_client);
 
             var loans = await context.Loans.Where(x => x.Client == client.Id_Client)
                 .OrderByDescending(x => x.End_Of_Repayment)

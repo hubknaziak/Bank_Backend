@@ -16,8 +16,6 @@ namespace BankCore.Services
         public LoanService(ILoanRepository repository)
         {
             this.repository = repository;
-            //this.configuration = configuration;
-            // this.secretKey = secretKey;
         }
 
 
@@ -26,7 +24,6 @@ namespace BankCore.Services
             return await repository.ApplyForLoan(new Loan_Application
             {
                 Submission_Date = DateTime.Now,
-                //Decicion_Date = 
                 Installments_Count = loan_ApplicationDto.installmentsCount,
                 Amount = loan_ApplicationDto.amount,
                 Repayment_Time = loan_ApplicationDto.repaymentTime,
@@ -38,8 +35,6 @@ namespace BankCore.Services
         public async Task<Tuple<int, IEnumerable<Loan_Application>>> ShowAllLoanApplications(int takeCount, int skipCount, int administrator, CancellationToken cancellationToken)
         {
             return await repository.ShowAllLoanApplications(takeCount, skipCount, administrator, cancellationToken);
-           // var loan_Applications = await repository.ShowLoanApplications(takeCount, skipCount, administrator, cancellationToken);
-           // return Tuple.Create(loan_Applications.Item1, loan_Applications.Item2.Select(x => mapper.Map<NoteDto>(x)));
         }
 
         public async Task< IEnumerable<Loan_ApplicationDto>> ShowLoanApplication(string login, CancellationToken cancellationToken)

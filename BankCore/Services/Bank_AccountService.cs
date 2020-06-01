@@ -16,8 +16,6 @@ namespace BankCore.Services
         public Bank_AccountService(IBank_AccountRepository repository)
         {
             this.repository = repository;
-            //this.configuration = configuration;
-            // this.secretKey = secretKey;
         }
 
         public async Task<bool> BlockBankAccount(Bank_AccountDto bank_AccountDto, CancellationToken cancellationToken)

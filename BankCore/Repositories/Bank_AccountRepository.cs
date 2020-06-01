@@ -104,10 +104,12 @@ namespace BankCore.Repositories
             var bankId = context.Bank_Accounts
              .OrderByDescending(x => x.Id_Bank_Account).FirstOrDefault();
 
-            bank_AccountDto.bankAccountId = bankId.Id_Bank_Account + 1;
-            bank_AccountDto.currencyName = currency.Name;
+            if (bankId == null) bank_Account.Id_Bank_Account = 0;
+            else bank_Account.Id_Bank_Account = bankId.Id_Bank_Account + 1;
+            bank_Account.Currency = currency.Id_Currency;
             bank_AccountDto.status = bank_Account.Status;
-
+            bank_AccountDto.currencyName = currency.Name;
+            bank_AccountDto.bankAccountId = bank_Account.Id_Bank_Account;
 
             context.Bank_Accounts.Add(bank_Account);
             try

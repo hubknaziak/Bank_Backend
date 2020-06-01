@@ -44,7 +44,6 @@ namespace BankAPI
             var allowedMethods = Configuration.GetSection("CorsSettings:AllowedMethods")
                 .Get<string[]>();
 
-            //services.AddAutoMapper(typeof(Mapping));
 
             services.AddCors(options =>
             {
@@ -68,8 +67,6 @@ namespace BankAPI
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IAccountService, AccountService>(x =>
                 ActivatorUtilities.CreateInstance<AccountService>(x, jwtSecret));
-            //  services.AddTransient<IOperationRepository, OperationRepository>();
-            //  services.AddTransient<IOperationService, OperationService>();
             services.AddTransient<ITransferRepository, TransferRepository>();
             services.AddTransient<ITransferService, TransferService>();
             services.AddTransient<ILoanRepository, LoanRepository>();

@@ -10,13 +10,13 @@ namespace BankCore.Services
 {
     public interface IBank_AccountService
     {
-        Task<object> CreateBankAccount(string login, Bank_AccountDto bank_AccountDto, CancellationToken cancellationToken); //create
+        Task<object> CreateBankAccount(string login, Bank_AccountDto bank_AccountDto, CancellationToken cancellationToken); 
 
-        Task<bool> BlockBankAccount(Bank_AccountDto bank_AccountDto, CancellationToken cancellationToken);  //update
+        Task<bool> BlockBankAccount(Bank_AccountDto bank_AccountDto, CancellationToken cancellationToken);  
 
-        Task<bool> UnblockBankAccount(int Id_Bank_Account, CancellationToken cancellationToken);  //update
+        Task<bool> UnblockBankAccount(int Id_Bank_Account, CancellationToken cancellationToken);  
 
-        Task<decimal> CheckAccountAmount(int Id_Bank_Account, CancellationToken cancellationToken);    //get
+        Task<decimal> CheckAccountAmount(int Id_Bank_Account, CancellationToken cancellationToken);    
 
         Task<bool> DeleteBankAccount(int id, CancellationToken cancellationToken);
 

@@ -54,26 +54,23 @@ namespace BankAPI.Controllers
             {
                 return UnprocessableEntity("ERROR, Account cannot be created");
             }
-
-            // return Ok(new { login = response });
             return Ok();
         }
 
-        [AllowAnonymous]
         [HttpPost("register/admin")]
         [ProducesResponseType(typeof(string), StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> RegisterAdmin([FromBody] AdministratorDto administratorDto,
           CancellationToken cancellationToken = default)
         {
-            /*string login = HttpContext.GetLoginFromClaims();
+            string login = HttpContext.GetLoginFromClaims();
 
             var access = await validateUserFilter.ValidateUser(login, cancellationToken);
 
             if (access == "client" || access == "null")
             {
                 return UnprocessableEntity("ERROR, Access denied");
-            }*/
+            }
 
             var response = await accountService.CreateAdminAccount(administratorDto, cancellationToken);
 
@@ -128,21 +125,6 @@ namespace BankAPI.Controllers
             return NoContent();
         }
 
-        /*[HttpPut("change")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> ChangePassword(GetClientDto clientDto,
-           CancellationToken cancellationToken = default)
-        {
-            var success = await accountService.ChangePassword(clientDto, cancellationToken);
-            if (!success)
-            {
-                return UnprocessableEntity("Failed to change password");
-            }
-
-            return NoContent();
-        }*/
-
         [HttpPut("block")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
@@ -191,28 +173,7 @@ namespace BankAPI.Controllers
             return NoContent();
         }
 
-        /* //[AllowAnonymous]
-         [HttpGet("{login}")]
-         [ProducesResponseType(typeof(AccountDto), StatusCodes.Status200OK)]
-         [ProducesResponseType(StatusCodes.Status404NotFound)]
-         public async Task<ActionResult<AccountDto>> GetAccount(string login,
-             CancellationToken cancellationToken = default)
-         {
-             var result = await accountService.GetAccount(login, cancellationToken);
 
-             if (result == null)
-             {
-                 return NotFound();
-             }
-             else if (result is string)
-             {
-                 return Unauthorized(result);
-             }
-             return Ok(result);
-         }*/
-
-        // DELETE: api/Accounts/5
-        //[AllowAnonymous]
         [HttpDelete("{login}")]
         public async Task<IActionResult> DeleteAccount(string login, CancellationToken cancellationToken)
         {
@@ -232,7 +193,6 @@ namespace BankAPI.Controllers
                 return NotFound();
             }
 
-            //_context.Accounts.Remove(account);
             if (account is string)
             {
                 return Unauthorized(account);
@@ -344,31 +304,5 @@ namespace BankAPI.Controllers
             return Ok( result );
         }
 
-        /* //[AllowAnonymous]
-         [HttpGet]
-         [ProducesResponseType(typeof(GetClientDto), StatusCodes.Status200OK)]
-         [ProducesResponseType(StatusCodes.Status404NotFound)]
-         public async Task<ActionResult<GetClientDto>> GetAdminAccount(CancellationToken cancellationToken = default)
-         {
-             string login = HttpContext.GetLoginFromClaims();
-
-             var result = await accountService.GetAdminAccount(login, cancellationToken);
-
-             if (result == null)
-             {
-                 return NotFound();
-             }
-
-             else if (result is string)
-             {
-                 return Unauthorized(result);
-             }
-             return Ok(result);
-         }*/
-
-        /*private bool AccountExists(int id)
-        {
-            return _context.Accounts.Any(e => e.id_account == id);
-        }*/
     }
 }

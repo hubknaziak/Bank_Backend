@@ -14,11 +14,9 @@ namespace BankCore.Repositories
 
         Task<string> CreateAdminAccount(Account user, Administrator admin, CancellationToken cancellationToken);
 
-        Task<string> VerifyPassword(AccountDto user, CancellationToken cancellationToken);
+        Task<string> VerifyPassword(AccountDto user, CancellationToken cancellationToken);     
 
-        //Task<bool> VerifyAdminPassword(AccountDto user, CancellationToken cancellationToken);
-
-        Task<IEnumerable<GetClientDto>> ShowAllAccounts(CancellationToken cancellationToken);   //DONE
+        Task<IEnumerable<GetClientDto>> ShowAllAccounts(CancellationToken cancellationToken);   
 
         Task<bool> ModifyAccount(GetClientDto clientDto, CancellationToken cancellationToken);
 

@@ -153,7 +153,6 @@ namespace BankAPI.Controllers
                 return BadRequest("Failed to check loans");
             }
 
-            //return Ok(new { count = loanApplications, notes = notes.Item2 });
             return Ok(loanApplications );
         }
 
@@ -180,8 +179,6 @@ namespace BankAPI.Controllers
                 return UnprocessableEntity("ERROR, Loan application cannot be considered");
             }
 
-            //var token = operationService.GenerateJwt(createAccountDto.AccountDto);
-            //return Ok(new { token });
             return NoContent();
         }
 
@@ -207,8 +204,6 @@ namespace BankAPI.Controllers
                 return UnprocessableEntity("ERROR, Loan application cannot be update");
             }
 
-            //var token = operationService.GenerateJwt(createAccountDto.AccountDto);
-            //return Ok(new { token });
             return Ok();
         }
     }
