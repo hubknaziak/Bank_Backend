@@ -232,7 +232,7 @@ namespace BankCore.Repositories
             return tran as IEnumerable<TransferDto>;
         }
 
-        public async Task<Tuple<int, IEnumerable<Transfer>>> ShowAwaitingTransfers(int takeCount, int skipCount, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Transfer>> ShowAwaitingTransfers(CancellationToken cancellationToken)
         {
             var count = await context.Transfers.Where(x => x.Status.Equals("in progress"))
                .CountAsync();
@@ -242,15 +242,12 @@ namespace BankCore.Repositories
                 return null;
             }
 
-
             var transfers = await context.Transfers.Where(x => x.Status.Equals("in progress"))
                  .OrderByDescending(x => x.Execution_Date)
-                 .Skip(skipCount)
-                 .Take(takeCount)
                  .AsNoTracking()
                  .ToListAsync(cancellationToken);
            
-            return Tuple.Create(count, transfers as IEnumerable<Transfer>);
+            return  transfers as IEnumerable<Transfer>;
         }
 
         public async Task<bool> MakeTransfers(CancellationToken cancellationToken)

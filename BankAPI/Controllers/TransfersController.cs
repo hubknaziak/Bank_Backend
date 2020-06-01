@@ -127,19 +127,22 @@ namespace BankAPI.Controllers
 
         [HttpGet("showAwaitingTransfers")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<Transfer>>> ShowAwaitingTransfers([FromQuery] int takeCount, 
-            [FromQuery]int skipCount, CancellationToken cancellationToken = default)
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<ActionResult<IEnumerable<Transfer>>> ShowAwaitingTransfers(CancellationToken cancellationToken = default)
         {
-            if (takeCount < 1 || skipCount < 0)
+            string l = HttpContext.GetLoginFromClaims();
+
+            var access = await validateUserFilter.ValidateUser(l, cancellationToken);
+
+            if (access == "client" || access == "null")
             {
-                return BadRequest("Failed to show awaiting transfers");
+                return UnprocessableEntity("ERROR, Access denied");
             }
 
-            var transfers = await transferService.ShowAwaitingTransfers(takeCount, skipCount, cancellationToken);
+            var transfers = await transferService.ShowAwaitingTransfers(cancellationToken);
             if (transfers == null)
             {
-                return BadRequest("Failed to show awaiting transfers");
+                return UnprocessableEntity("Failed to show awaiting transfers");
             }
 
             return Ok(transfers );

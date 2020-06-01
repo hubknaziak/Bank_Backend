@@ -22,7 +22,7 @@ namespace BankCore.Services
 
         Task<IEnumerable<TransferDto>> GetAdminTransfers(string login, DateTime sendingDate, CancellationToken cancellationToken);
 
-        Task<Tuple<int, IEnumerable<Transfer>>> ShowAwaitingTransfers(int takeCount, int skipCount, CancellationToken cancellationToken);
+        Task<IEnumerable<Transfer>> ShowAwaitingTransfers(CancellationToken cancellationToken);
 
         Task<bool> CreateTransfer(TransferDto transferDto, string login, CancellationToken cancellationToken); 
 

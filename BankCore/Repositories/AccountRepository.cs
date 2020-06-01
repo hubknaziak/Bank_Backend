@@ -199,9 +199,7 @@ namespace BankCore.Repositories
                 return false;
             }
 
-           
-
-            if(clientDto.password != null) record.Password = Crypto.HashPassword(clientDto.password);
+            if (clientDto.password != null) record.Password = Crypto.HashPassword(clientDto.password);
             record.First_name = clientDto.firstName;
             record.Last_name = clientDto.lastName;
             client.Status = clientDto.status;
