@@ -151,7 +151,7 @@ namespace BankAPI.Controllers
 
         [HttpGet("{transferId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<ActionResult<TransferDto>> GetTransfer([FromRoute]int transferId,
             CancellationToken cancellationToken = default)
         {
@@ -167,7 +167,7 @@ namespace BankAPI.Controllers
             var transfer = await transferService.GetTransfer(transferId, cancellationToken);
             if (transfer == null)
             {
-                return NoContent();
+                return UnprocessableEntity("Failed to show transfer");
             }
 
             return Ok(transfer );

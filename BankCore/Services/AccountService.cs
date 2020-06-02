@@ -66,8 +66,7 @@ namespace BankCore.Services
             {
                 Employment_Date = administratorDto.employmentDate,
                 Status = "active"
-            }, cancellationToken)
-            ;
+            }, cancellationToken);
         }
 
         public async Task<string> VerifyPassword(AccountDto userDto, CancellationToken cancellationToken)

@@ -318,7 +318,13 @@ namespace BankCore.Repositories
             var receiverAccount = await context.Bank_Accounts
                 .SingleOrDefaultAsync(x => x.Id_Bank_Account == transfer.Receiver_Bank_Account, cancellationToken);
 
-            if(senderAccount == null || receiverAccount == null)
+            var record = context.Transfers
+             .OrderByDescending(x => x.Id_Transfer).FirstOrDefault();
+
+            if (record == null) { transfer.Id_Transfer = 0; }
+            else { transfer.Id_Transfer = record.Id_Transfer + 1; }
+
+            if (senderAccount == null || receiverAccount == null)
             {
                 return false;
             }
@@ -335,10 +341,17 @@ namespace BankCore.Repositories
             if(transfer.Status == "in progress")
             {
                 context.Transfers.Add(transfer);
-                return await context.SaveChangesAsync(cancellationToken) > 0;
+                try
+                {
+                    return await context.SaveChangesAsync(cancellationToken) > 0;
+                }
+                catch(DbUpdateException)
+                {
+                    return false;
+                }
             }
 
-            receiverAccount.Account_Balance = receiverAccount.Account_Balance + transfer.Amount;
+           if(transfer.Status == "executed") receiverAccount.Account_Balance = receiverAccount.Account_Balance + transfer.Amount;
             context.Transfers.Add(transfer);
             try
             {
@@ -365,6 +378,9 @@ namespace BankCore.Repositories
             var receiverCurrency = await context.Currencies
               .SingleOrDefaultAsync(x => x.Id_Currency == receiverAccount.Currency, cancellationToken);
 
+            var plnCurrency = await context.Currencies
+             .SingleOrDefaultAsync(x => x.Id_Currency == 1, cancellationToken);
+
             if (senderAccount == null || receiverAccount == null)
             {
                 return false;
@@ -377,7 +393,9 @@ namespace BankCore.Repositories
             {
                 return false;
             }
-            senderAccount.Account_Balance = senderAccount.Account_Balance - (transfer.Amount * receiverCurrency.Exchange_Rate);
+            senderAccount.Account_Balance = senderAccount.Account_Balance - transfer.Amount;
+
+            transfer.Amount = transfer.Amount * plnCurrency.Exchange_Rate;
 
             receiverAccount.Account_Balance = receiverAccount.Account_Balance + (transfer.Amount * receiverCurrency.Exchange_Rate);
 

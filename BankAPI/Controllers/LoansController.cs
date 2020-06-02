@@ -87,7 +87,7 @@ namespace BankAPI.Controllers
         [HttpGet("application/{login}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<Loan_ApplicationDto>>> GetClientLoanApplications([FromRoute]string login,
+        public async Task<ActionResult<IEnumerable<Loan_ApplicationDto>>> GetClientLoanApplications(
           CancellationToken cancellationToken = default)
         {
             string l = HttpContext.GetLoginFromClaims();
@@ -99,7 +99,7 @@ namespace BankAPI.Controllers
                 return UnprocessableEntity("ERROR, Access denied");
             }
 
-            var loanApplications = await loanService.ShowLoanApplication(login, cancellationToken);
+            var loanApplications = await loanService.ShowLoanApplication(l, cancellationToken);
             if (loanApplications == null)
             {
                 return BadRequest("Failed to check loan applocations");
@@ -135,7 +135,7 @@ namespace BankAPI.Controllers
         [HttpGet("{login}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<LoanDto>>> GetClientLoans([FromRoute]string login,
+        public async Task<ActionResult<IEnumerable<LoanDto>>> GetClientLoans(
         CancellationToken cancellationToken = default)
         {
             string l = HttpContext.GetLoginFromClaims();
@@ -147,7 +147,7 @@ namespace BankAPI.Controllers
                 return UnprocessableEntity("ERROR, Access denied");
             }
 
-            var loanApplications = await loanService.ShowLoan(login, cancellationToken);
+            var loanApplications = await loanService.ShowLoan(l, cancellationToken);
             if (loanApplications == null)
             {
                 return BadRequest("Failed to check loans");

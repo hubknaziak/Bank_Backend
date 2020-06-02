@@ -64,11 +64,11 @@ namespace BankCore.Services
 
         public async Task<bool> CreateTransfer(TransferDto transferDto, string login, CancellationToken cancellationToken)
         {
-            string stat = "executed";
+            string stat = "in progress";
       
-            if(transferDto.executionDate.CompareTo(transferDto.sendingDate) > 0)
+            if(transferDto.executionDate.CompareTo(transferDto.sendingDate) == 0)
             {
-                stat = "in progress";
+                stat = "executed";
             }
             if (transferDto.executionDate.CompareTo(transferDto.sendingDate) < 0)
             {
