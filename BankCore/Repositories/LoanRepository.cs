@@ -31,6 +31,12 @@ namespace BankCore.Repositories
 
             loan_Application.Client = client.Id_Client;
 
+            var record = context.Loan_Applications
+             .OrderByDescending(x => x.Id_Loan_Application).FirstOrDefault();
+
+            if (record == null) { loan_Application.Id_Loan_Application = 0; }
+            else { loan_Application.Id_Loan_Application = loan_Application.Id_Loan_Application + 1; }
+
             var administrators = await context.Administrators
                 .OrderByDescending(x => x.Id_Administrator)
                 .ToArrayAsync(cancellationToken);
@@ -118,6 +124,7 @@ namespace BankCore.Repositories
                 loan_ApplicationDto.installmentsCount = loanApplications[i].Installments_Count;
                 loan_ApplicationDto.repaymentTime = loanApplications[i].Repayment_Time;
                 loan_ApplicationDto.bankAccountId = loanApplications[i].Bank_Account;
+                loan_ApplicationDto.status = loanApplications[i].Status;
                 loan_ApplicationsDto[i] = loan_ApplicationDto;
             }
 

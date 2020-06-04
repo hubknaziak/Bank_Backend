@@ -21,6 +21,8 @@ namespace BankCore.Dtos
 
         public int repaymentTime { get; set; }
 
+        public string status { get; set; }
+
         [Required]
         public int bankAccountId { get; set; }
     }
