@@ -395,9 +395,11 @@ namespace BankCore.Repositories
             }
             senderAccount.Account_Balance = senderAccount.Account_Balance - transfer.Amount;
 
-            transfer.Amount = transfer.Amount * plnCurrency.Exchange_Rate;
+            //transfer.Amount = transfer.Amount * plnCurrency.Exchange_Rate;
+            //receiverAccount.Account_Balance = receiverAccount.Account_Balance + (transfer.Amount * receiverCurrency.Exchange_Rate);
 
-            receiverAccount.Account_Balance = receiverAccount.Account_Balance + (transfer.Amount * receiverCurrency.Exchange_Rate);
+            var baseAmount = transfer.Amount * senderCurrency.Exchange_Rate;
+            receiverAccount.Account_Balance += baseAmount / receiverCurrency.Exchange_Rate;
 
             var transferId = context.Transfers
             .OrderByDescending(x => x.Id_Transfer).FirstOrDefault();
