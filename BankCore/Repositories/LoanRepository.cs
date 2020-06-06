@@ -35,7 +35,7 @@ namespace BankCore.Repositories
              .OrderByDescending(x => x.Id_Loan_Application).FirstOrDefault();
 
             if (record == null) { loan_Application.Id_Loan_Application = 0; }
-            else { loan_Application.Id_Loan_Application = loan_Application.Id_Loan_Application + 1; }
+            else { loan_Application.Id_Loan_Application = record.Id_Loan_Application + 1; }
 
             var administrators = await context.Administrators
                 .OrderByDescending(x => x.Id_Administrator)
