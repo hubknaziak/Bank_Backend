@@ -278,6 +278,7 @@ namespace BankCore
 
                 entity.Property(e => e.Decicion_Date)
                     .HasColumnName("Decision_date")
+                    .HasDefaultValue(null)
                     .HasColumnType("date");
 
                 entity.Property(e => e.Installments_Count)

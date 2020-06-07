@@ -18,7 +18,7 @@ namespace BankCore.Models
         public DateTime Submission_Date { get; set; }
 
         [DataType(DataType.Date)]
-        public DateTime Decicion_Date { get; set; }
+        public DateTime? Decicion_Date { get; set; }
 
         [Required]
         public decimal Installments_Count { get; set; } //DECIMAL

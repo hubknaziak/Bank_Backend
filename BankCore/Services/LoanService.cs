@@ -24,6 +24,7 @@ namespace BankCore.Services
             return await repository.ApplyForLoan(new Loan_Application
             {
                 Submission_Date = DateTime.Now,
+                Decicion_Date = null,
                 Installments_Count = loan_ApplicationDto.installmentsCount,
                 Amount = loan_ApplicationDto.amount,
                 Repayment_Time = loan_ApplicationDto.repaymentTime,
