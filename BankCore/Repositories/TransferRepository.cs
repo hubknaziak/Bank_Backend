@@ -234,14 +234,6 @@ namespace BankCore.Repositories
 
         public async Task<IEnumerable<Transfer>> ShowAwaitingTransfers(CancellationToken cancellationToken)
         {
-            var count = await context.Transfers.Where(x => x.Status.Equals("in progress"))
-               .CountAsync();
-
-            if (count == 0)
-            {
-                return null;
-            }
-
             var transfers = await context.Transfers.Where(x => x.Status.Equals("in progress"))
                  .OrderByDescending(x => x.Execution_Date)
                  .AsNoTracking()

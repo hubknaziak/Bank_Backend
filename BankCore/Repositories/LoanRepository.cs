@@ -156,13 +156,17 @@ namespace BankCore.Repositories
             AdminLoanApplicationDto[] adminLoan_ApplicationsDto = new AdminLoanApplicationDto[size];
             AdminLoanApplicationDto adminLoan_ApplicationDto = new AdminLoanApplicationDto();
             Client [] clients = new Client[size];
+            Account[] clientAccounts = new Account[size];
 
             int index = 0;
             foreach(Loan_Application loan in loanApplications)
             {
                 var client = await context.Clients
              .SingleOrDefaultAsync(x => x.Id_Client == loan.Client, cancellationToken);
+                var clientAccount = await context.Accounts
+            .SingleOrDefaultAsync(x => x.Id_account == loan.Client, cancellationToken);
                 clients[index] = client;
+                clientAccounts[index] = clientAccount;
                 index++;
             }
 
@@ -170,8 +174,8 @@ namespace BankCore.Repositories
             {
                 adminLoan_ApplicationDto = new AdminLoanApplicationDto();
                 adminLoan_ApplicationDto.loanApplicationId = loanApplications[i].Id_Loan_Application;
-                adminLoan_ApplicationDto.firstName = account.First_name;
-                adminLoan_ApplicationDto.lastName = account.Last_name;
+                adminLoan_ApplicationDto.firstName = clientAccounts[i].First_name;
+                adminLoan_ApplicationDto.lastName = clientAccounts[i].Last_name;
                 adminLoan_ApplicationDto.phoneNumber = clients[i].Phone_Number;
                 adminLoan_ApplicationDto.submissionDate = loanApplications[i].Submission_Date;
                 adminLoan_ApplicationDto.amount = loanApplications[i].Amount;
@@ -283,6 +287,8 @@ namespace BankCore.Repositories
             loan.Client = loan_Application.Client;
             loan.Administrator = loan_Application.Administrator;
             loan.Bank_Account = loan_Application.Bank_Account;
+
+            loan_Application.Decicion_Date = DateTime.Now;
 
             context.Loans.Add(loan);
             try
