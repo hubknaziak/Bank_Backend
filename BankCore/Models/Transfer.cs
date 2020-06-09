@@ -28,7 +28,6 @@ namespace BankCore.Models
         public string Receiver { get; set; }
 
 
-        [Required]
         [StringLength(100)]
         public string Description { get; set; }
 

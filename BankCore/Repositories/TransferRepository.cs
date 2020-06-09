@@ -189,13 +189,21 @@ namespace BankCore.Repositories
                 transferDto.title = transfers[i].Title;
                 transferDto.receiver = transfers[i].Receiver;
                 transferDto.description = transfers[i].Description;
-                // transferDto.amount = transfers[i].Amount;
-                var baseAmount = transfers[i].Amount * receiverCurrencies[i].Exchange_Rate;
-                transferDto.amount = baseAmount / senderCurrencies[i].Exchange_Rate;
-
+              
                 transferDto.status = transfers[i].Status;
-                if (transfers[i].Receiver_Bank_Account == bankAccountId) transferDto.isReceived = true;
-                else transferDto.isReceived = false;
+                if (transfers[i].Receiver_Bank_Account == bankAccountId)
+                {
+                    transferDto.isReceived = true;
+                    transferDto.amount = transfers[i].Amount;
+                }
+                else
+                {
+                    transferDto.isReceived = false;
+                    // transferDto.amount = transfers[i].Amount;
+                    var baseAmount = transfers[i].Amount * receiverCurrencies[i].Exchange_Rate;
+                    transferDto.amount = baseAmount / senderCurrencies[i].Exchange_Rate;
+
+                }
                 transfersDto[i] = transferDto;
             }
 
@@ -466,9 +474,13 @@ namespace BankCore.Repositories
                 return false;
             }
             senderAccount.Account_Balance = senderAccount.Account_Balance - transfer.Amount;
+
             
             if(transfer.Status == "in progress")
             {
+                //transfer.Amount = CurrencyConversion.ConvertToReceiverCurrency(Transfer.Amount, senderExchangeRate, receiverExchangeRate);
+                var baseAmount =transfer.Amount * senderCurrency.Exchange_Rate;
+                transfer.Amount =  baseAmount / receiverCurrency.Exchange_Rate;
                 context.Transfers.Add(transfer);
                 try
                 {
@@ -490,6 +502,8 @@ namespace BankCore.Repositories
                 {
                     var baseAmount = transfer.Amount * senderCurrency.Exchange_Rate;
                     receiverAccount.Account_Balance += baseAmount / receiverCurrency.Exchange_Rate;
+
+                    transfer.Amount = baseAmount / receiverCurrency.Exchange_Rate;
                 }
             }
 
@@ -541,6 +555,8 @@ namespace BankCore.Repositories
 
             var baseAmount = transfer.Amount * senderCurrency.Exchange_Rate;
             receiverAccount.Account_Balance += baseAmount / receiverCurrency.Exchange_Rate;
+
+            transfer.Amount = baseAmount / receiverCurrency.Exchange_Rate;
 
             var transferId = context.Transfers
             .OrderByDescending(x => x.Id_Transfer).FirstOrDefault();
