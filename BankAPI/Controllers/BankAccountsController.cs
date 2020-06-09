@@ -43,7 +43,7 @@ namespace BankAPI.Controllers
 
             if (access == "client" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
             var bankAccount = await bank_AccountService.CreateBankAccount(login, bank_AccountDto, cancellationToken);
@@ -68,7 +68,7 @@ namespace BankAPI.Controllers
 
             if (access == "client" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
             var account = await bank_AccountService.DeleteBankAccount(id, cancellationToken);
@@ -96,7 +96,7 @@ namespace BankAPI.Controllers
 
             if (access == "client" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
             var success = await bank_AccountService.BlockBankAccount(bank_AccountDto, cancellationToken);
@@ -121,7 +121,7 @@ namespace BankAPI.Controllers
 
             if (access == "client" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
             var success = await bank_AccountService.UnblockBankAccount(id_Bank_Account, cancellationToken);

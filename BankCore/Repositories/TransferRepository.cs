@@ -105,8 +105,20 @@ namespace BankCore.Repositories
             var transfer = await context.Transfers
                .SingleOrDefaultAsync(x => x.Id_Transfer == transferId, cancellationToken);
 
+            var senderAccount = await context.Bank_Accounts
+               .SingleOrDefaultAsync(x => x.Id_Bank_Account == transfer.Sender_Bank_Account, cancellationToken);
 
-            if(transfer == null || transfer.Status == "executed" || transfer.Status == "cancelled")
+            var senderCurrency = await context.Currencies
+              .SingleOrDefaultAsync(x => x.Id_Currency == senderAccount.Currency, cancellationToken);
+
+            var receiverAccount = await context.Bank_Accounts
+               .SingleOrDefaultAsync(x => x.Id_Bank_Account == transfer.Receiver_Bank_Account, cancellationToken);
+
+            var receiverCurrency = await context.Currencies
+              .SingleOrDefaultAsync(x => x.Id_Currency == receiverAccount.Currency, cancellationToken);
+
+
+            if (transfer == null || transfer.Status == "executed" || transfer.Status == "cancelled")
             {
                 return null;
             }
@@ -119,7 +131,9 @@ namespace BankCore.Repositories
             transferDto.title = transfer.Title;
             transferDto.receiver = transfer.Receiver;
             transferDto.description = transfer.Description;
-            transferDto.amount = transfer.Amount;
+          
+                var baseAmount = transfer.Amount * receiverCurrency.Exchange_Rate;
+                transferDto.amount = baseAmount / senderCurrency.Exchange_Rate;
 
             return transferDto;
         }
@@ -130,6 +144,31 @@ namespace BankCore.Repositories
                 .OrderByDescending(x => x.Sending_Date)
                 .AsNoTracking()
                 .ToArrayAsync(cancellationToken);
+
+            Bank_Account[] senderAccounts = new Bank_Account[transfers.Length];
+            Bank_Account[] receiverAccounts = new Bank_Account[transfers.Length];
+            Currency[] senderCurrencies = new Currency[transfers.Length];
+            Currency[] receiverCurrencies = new Currency[transfers.Length];
+
+            for (int i = 0; i < transfers.Length; i++)
+            {
+                var senderAccount = await context.Bank_Accounts
+              .SingleOrDefaultAsync(x => x.Id_Bank_Account == transfers[i].Sender_Bank_Account, cancellationToken);
+
+                var senderCurrency = await context.Currencies
+                  .SingleOrDefaultAsync(x => x.Id_Currency == senderAccount.Currency, cancellationToken);
+
+                var receiverAccount = await context.Bank_Accounts
+                   .SingleOrDefaultAsync(x => x.Id_Bank_Account == transfers[i].Receiver_Bank_Account, cancellationToken);
+
+                var receiverCurrency = await context.Currencies
+                  .SingleOrDefaultAsync(x => x.Id_Currency == receiverAccount.Currency, cancellationToken);
+
+                senderAccounts[i] = senderAccount;
+                receiverAccounts[i] = receiverAccount;
+                senderCurrencies[i] = senderCurrency;
+                receiverCurrencies[i] = receiverCurrency;
+            }
 
             if (transfers == null)
             {
@@ -150,7 +189,10 @@ namespace BankCore.Repositories
                 transferDto.title = transfers[i].Title;
                 transferDto.receiver = transfers[i].Receiver;
                 transferDto.description = transfers[i].Description;
-                transferDto.amount = transfers[i].Amount;
+                // transferDto.amount = transfers[i].Amount;
+                var baseAmount = transfers[i].Amount * receiverCurrencies[i].Exchange_Rate;
+                transferDto.amount = baseAmount / senderCurrencies[i].Exchange_Rate;
+
                 transferDto.status = transfers[i].Status;
                 if (transfers[i].Receiver_Bank_Account == bankAccountId) transferDto.isReceived = true;
                 else transferDto.isReceived = false;
@@ -194,6 +236,31 @@ namespace BankCore.Repositories
                 }
             }
 
+            Bank_Account[] senderAccounts = new Bank_Account[index];
+            Bank_Account[] receiverAccounts = new Bank_Account[index];
+            Currency[] senderCurrencies = new Currency[index];
+            Currency[] receiverCurrencies = new Currency[index];
+
+            for (int i = 0; i < index; i++)
+            {
+                var senderAccount = await context.Bank_Accounts
+              .SingleOrDefaultAsync(x => x.Id_Bank_Account == allTransfers[i].Sender_Bank_Account, cancellationToken);
+
+                var senderCurrency = await context.Currencies
+                  .SingleOrDefaultAsync(x => x.Id_Currency == senderAccount.Currency, cancellationToken);
+
+                var receiverAccount = await context.Bank_Accounts
+                   .SingleOrDefaultAsync(x => x.Id_Bank_Account == allTransfers[i].Receiver_Bank_Account, cancellationToken);
+
+                var receiverCurrency = await context.Currencies
+                  .SingleOrDefaultAsync(x => x.Id_Currency == receiverAccount.Currency, cancellationToken);
+
+                senderAccounts[i] = senderAccount;
+                receiverAccounts[i] = receiverAccount;
+                senderCurrencies[i] = senderCurrency;
+                receiverCurrencies[i] = receiverCurrency;
+            }
+
 
             TransferDto[] transfersDto = new TransferDto[index];
             TransferDto transferDto = new TransferDto();
@@ -212,7 +279,10 @@ namespace BankCore.Repositories
                         transferDto.title = allTransfers[i].Title;
                         transferDto.receiver = allTransfers[i].Receiver;
                         transferDto.description = allTransfers[i].Description;
-                        transferDto.amount = allTransfers[i].Amount;
+                        //transferDto.amount = allTransfers[i].Amount;
+                        var baseAmount = allTransfers[i].Amount * receiverCurrencies[i].Exchange_Rate;
+                        transferDto.amount = baseAmount / senderCurrencies[i].Exchange_Rate;
+
                         transfersDto[index] = transferDto;
                         index++;
                     }
@@ -229,7 +299,32 @@ namespace BankCore.Repositories
                 }
            }
 
-            return tran as IEnumerable<TransferDto>;
+           for(int i = 0; i < tran.Length - 1; i++)
+           {
+                var temp1 = tran[i];
+                for(int j = i + 1; j < tran.Length; j++)
+                {
+                    var temp2 = tran[j];
+                    if(temp1.transferId == temp2.transferId)
+                    {
+                        tran[i] = null;
+                        index--;
+                    }
+                }
+           }
+
+           TransferDto [] result = new TransferDto[index];
+           index = 0;
+           for (int i = 0; i < tran.Length; i++)
+           {
+                if (tran[i] != null)
+                {
+                    result[index] = tran[i];
+                    index++;
+                }
+           }
+
+            return result as IEnumerable<TransferDto>;
         }
 
         public async Task<IEnumerable<Transfer>> ShowAwaitingTransfers(CancellationToken cancellationToken)
@@ -237,8 +332,40 @@ namespace BankCore.Repositories
             var transfers = await context.Transfers.Where(x => x.Status.Equals("in progress"))
                  .OrderByDescending(x => x.Execution_Date)
                  .AsNoTracking()
-                 .ToListAsync(cancellationToken);
-           
+                 .ToArrayAsync(cancellationToken);
+
+            Bank_Account[] senderAccounts = new Bank_Account[transfers.Length];
+            Bank_Account[] receiverAccounts = new Bank_Account[transfers.Length];
+            Currency[] senderCurrencies = new Currency[transfers.Length];
+            Currency[] receiverCurrencies = new Currency[transfers.Length];
+
+            for (int i = 0; i < transfers.Length; i++)
+            {
+                var senderAccount = await context.Bank_Accounts
+              .SingleOrDefaultAsync(x => x.Id_Bank_Account == transfers[i].Sender_Bank_Account, cancellationToken);
+
+                var senderCurrency = await context.Currencies
+                  .SingleOrDefaultAsync(x => x.Id_Currency == senderAccount.Currency, cancellationToken);
+
+                var receiverAccount = await context.Bank_Accounts
+                   .SingleOrDefaultAsync(x => x.Id_Bank_Account == transfers[i].Receiver_Bank_Account, cancellationToken);
+
+                var receiverCurrency = await context.Currencies
+                  .SingleOrDefaultAsync(x => x.Id_Currency == receiverAccount.Currency, cancellationToken);
+
+                senderAccounts[i] = senderAccount;
+                receiverAccounts[i] = receiverAccount;
+                senderCurrencies[i] = senderCurrency;
+                receiverCurrencies[i] = receiverCurrency;
+
+            }
+
+            for(int i = 0; i < transfers.Length; i++)
+            {
+                var baseAmount = transfers[i].Amount * receiverCurrencies[i].Exchange_Rate;
+                transfers[i].Amount = baseAmount / senderCurrencies[i].Exchange_Rate;
+            }
+
             return  transfers as IEnumerable<Transfer>;
         }
 
@@ -278,14 +405,18 @@ namespace BankCore.Repositories
                 }
                 else               //if currencies of accounts are different
                 {
-                    var currency = await context.Currencies
-                    .SingleOrDefaultAsync(x => x.Id_Currency == receiverAccount.Currency, cancellationToken);
+                    var senderCurrency = await context.Currencies
+              .SingleOrDefaultAsync(x => x.Id_Currency == senderAccount.Currency, cancellationToken);
 
-                    var difference = senderAccount.Account_Balance - t.Amount * currency.Exchange_Rate;
+                    var receiverCurrency = await context.Currencies
+              .SingleOrDefaultAsync(x => x.Id_Currency == receiverAccount.Currency, cancellationToken);
+
+                    var difference = senderAccount.Account_Balance - t.Amount;
                     senderAccount.Account_Balance = difference;
 
-                    var sum = receiverAccount.Account_Balance + t.Amount * currency.Exchange_Rate;
-                    receiverAccount.Account_Balance = sum;
+                    var baseAmount = t.Amount * senderCurrency.Exchange_Rate;
+                    receiverAccount.Account_Balance += baseAmount / receiverCurrency.Exchange_Rate;
+
                     t.Status = "executed";
                 }
 
@@ -307,8 +438,14 @@ namespace BankCore.Repositories
             var senderAccount = await context.Bank_Accounts
                 .SingleOrDefaultAsync(x => x.Id_Bank_Account == transfer.Sender_Bank_Account, cancellationToken);
 
+            var senderCurrency = await context.Currencies
+              .SingleOrDefaultAsync(x => x.Id_Currency == senderAccount.Currency, cancellationToken);
+
             var receiverAccount = await context.Bank_Accounts
                 .SingleOrDefaultAsync(x => x.Id_Bank_Account == transfer.Receiver_Bank_Account, cancellationToken);
+
+            var receiverCurrency = await context.Currencies
+              .SingleOrDefaultAsync(x => x.Id_Currency == receiverAccount.Currency, cancellationToken);
 
             var record = context.Transfers
              .OrderByDescending(x => x.Id_Transfer).FirstOrDefault();
@@ -343,7 +480,19 @@ namespace BankCore.Repositories
                 }
             }
 
-           if(transfer.Status == "executed") receiverAccount.Account_Balance = receiverAccount.Account_Balance + transfer.Amount;
+            if (transfer.Status == "executed")
+            {
+                if (senderCurrency.Id_Currency == receiverCurrency.Id_Currency)
+                {
+                    receiverAccount.Account_Balance = receiverAccount.Account_Balance + transfer.Amount;
+                }
+                else
+                {
+                    var baseAmount = transfer.Amount * senderCurrency.Exchange_Rate;
+                    receiverAccount.Account_Balance += baseAmount / receiverCurrency.Exchange_Rate;
+                }
+            }
+
             context.Transfers.Add(transfer);
             try
             {

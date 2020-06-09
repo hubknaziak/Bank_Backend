@@ -43,7 +43,7 @@ namespace BankAPI.Controllers
 
             if (access == "admin" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
             var success = await transferService.CreateTransfer(transferDto, l, cancellationToken);
@@ -68,7 +68,7 @@ namespace BankAPI.Controllers
 
             if (access == "admin" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
             var success = await transferService.ExchangeMoney(currencyExchangeDto, cancellationToken);
@@ -93,7 +93,7 @@ namespace BankAPI.Controllers
 
             if (access == "client" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
             var success = await transferService.CancelTransaction(transferDto, cancellationToken);
@@ -136,7 +136,7 @@ namespace BankAPI.Controllers
 
             if (access == "client" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
             var transfers = await transferService.ShowAwaitingTransfers(cancellationToken);
@@ -161,7 +161,7 @@ namespace BankAPI.Controllers
 
             if (access == "client" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
             var transfer = await transferService.GetTransfer(transferId, cancellationToken);
@@ -185,7 +185,7 @@ namespace BankAPI.Controllers
 
             if (access == "admin" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
             var transfer = await transferService.GetTransfers(bankAccountId, cancellationToken);
@@ -209,7 +209,7 @@ namespace BankAPI.Controllers
 
             if (access == "client" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
             var transfer = await transferService.GetAdminTransfers(login, sendingDate, cancellationToken);
@@ -233,7 +233,7 @@ namespace BankAPI.Controllers
 
             if (access == "client" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
             var success = await transferService.MakeTransfers(cancellationToken);

@@ -42,7 +42,7 @@ namespace BankAPI.Controllers
 
             if (access == "admin" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
             var success = await loanService.ApplyForLoan(loan_ApplicationDto, cancellationToken);
@@ -67,7 +67,7 @@ namespace BankAPI.Controllers
 
             if (access == "client" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
             if (takeCount < 1 || skipCount < 0)
@@ -96,7 +96,7 @@ namespace BankAPI.Controllers
 
             if (access == "admin" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
             var loanApplications = await loanService.ShowLoanApplication(l, cancellationToken);
@@ -120,7 +120,7 @@ namespace BankAPI.Controllers
 
             if (access == "client" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
             var loanApplications = await loanService.GetAdminLoanApplications(l, cancellationToken);
@@ -144,7 +144,7 @@ namespace BankAPI.Controllers
 
             if (access == "admin" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
             var loanApplications = await loanService.ShowLoan(l, cancellationToken);
@@ -168,7 +168,7 @@ namespace BankAPI.Controllers
 
             if (access == "client" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
 
@@ -194,7 +194,7 @@ namespace BankAPI.Controllers
 
             if (access == "client" || access == "null")
             {
-                return UnprocessableEntity("ERROR, Access denied");
+                return Unauthorized("ERROR, Access denied");
             }
 
             var success = await loanService.ConfirmLoanApplication(adminLoanApplicationDto, cancellationToken);

@@ -258,6 +258,7 @@ namespace BankCore.Repositories
             if (adminLoanApplicationDto.status == "rejected")
             {
                 loan_Application.Status = "rejected";
+                loan_Application.Decicion_Date = DateTime.Now;
                 try
                 {
                     return await context.SaveChangesAsync(cancellationToken) > 0;
@@ -267,6 +268,9 @@ namespace BankCore.Repositories
                     return false;
                 }
             }
+
+            var bankAccount = await context.Bank_Accounts
+                .SingleOrDefaultAsync(x => x.Id_Bank_Account == loan_Application.Bank_Account, cancellationToken);
 
             loan_Application.Status = "accepted";
 
@@ -289,6 +293,7 @@ namespace BankCore.Repositories
             loan.Bank_Account = loan_Application.Bank_Account;
 
             loan_Application.Decicion_Date = DateTime.Now;
+            bankAccount.Account_Balance += loan_Application.Amount;
 
             context.Loans.Add(loan);
             try
