@@ -133,7 +133,7 @@ namespace BankCore.Repositories
             transferDto.description = transfer.Description;
           
                 var baseAmount = transfer.Amount * receiverCurrency.Exchange_Rate;
-                transferDto.amount = baseAmount / senderCurrency.Exchange_Rate;
+                transferDto.amount = Math.Round(baseAmount / senderCurrency.Exchange_Rate, 2);
 
             return transferDto;
         }
@@ -201,7 +201,7 @@ namespace BankCore.Repositories
                     transferDto.isReceived = false;
                     // transferDto.amount = transfers[i].Amount;
                     var baseAmount = transfers[i].Amount * receiverCurrencies[i].Exchange_Rate;
-                    transferDto.amount = baseAmount / senderCurrencies[i].Exchange_Rate;
+                    transferDto.amount = Math.Round(baseAmount / senderCurrencies[i].Exchange_Rate, 2);
 
                 }
                 transfersDto[i] = transferDto;
@@ -289,7 +289,7 @@ namespace BankCore.Repositories
                         transferDto.description = allTransfers[i].Description;
                         //transferDto.amount = allTransfers[i].Amount;
                         var baseAmount = allTransfers[i].Amount * receiverCurrencies[i].Exchange_Rate;
-                        transferDto.amount = baseAmount / senderCurrencies[i].Exchange_Rate;
+                        transferDto.amount = Math.Round(baseAmount / senderCurrencies[i].Exchange_Rate, 2);
 
                         transfersDto[index] = transferDto;
                         index++;
@@ -370,8 +370,8 @@ namespace BankCore.Repositories
 
             for(int i = 0; i < transfers.Length; i++)
             {
-                var baseAmount = transfers[i].Amount * receiverCurrencies[i].Exchange_Rate;
-                transfers[i].Amount = baseAmount / senderCurrencies[i].Exchange_Rate;
+                decimal baseAmount = transfers[i].Amount * receiverCurrencies[i].Exchange_Rate;
+                transfers[i].Amount = Math.Round(baseAmount / senderCurrencies[i].Exchange_Rate, 2);
             }
 
             return  transfers as IEnumerable<Transfer>;
