@@ -201,6 +201,7 @@ namespace BankCore.Repositories
                     transferDto.isReceived = false;
                     // transferDto.amount = transfers[i].Amount;
                     var baseAmount = transfers[i].Amount * receiverCurrencies[i].Exchange_Rate;
+                    var test = baseAmount / senderCurrencies[i].Exchange_Rate;
                     transferDto.amount = Math.Round(baseAmount / senderCurrencies[i].Exchange_Rate, 2);
 
                 }
@@ -478,9 +479,8 @@ namespace BankCore.Repositories
             
             if(transfer.Status == "in progress")
             {
-                //transfer.Amount = CurrencyConversion.ConvertToReceiverCurrency(Transfer.Amount, senderExchangeRate, receiverExchangeRate);
-                var baseAmount =transfer.Amount * senderCurrency.Exchange_Rate;
-                transfer.Amount =  baseAmount / receiverCurrency.Exchange_Rate;
+                var baseAmount = transfer.Amount * senderCurrency.Exchange_Rate;
+                transfer.Amount =  Math.Round(baseAmount / receiverCurrency.Exchange_Rate, 2);
                 context.Transfers.Add(transfer);
                 try
                 {
@@ -503,7 +503,7 @@ namespace BankCore.Repositories
                     var baseAmount = transfer.Amount * senderCurrency.Exchange_Rate;
                     receiverAccount.Account_Balance += baseAmount / receiverCurrency.Exchange_Rate;
 
-                    transfer.Amount = baseAmount / receiverCurrency.Exchange_Rate;
+                    transfer.Amount = Math.Round(baseAmount / receiverCurrency.Exchange_Rate, 2);
                 }
             }
 
@@ -556,7 +556,7 @@ namespace BankCore.Repositories
             var baseAmount = transfer.Amount * senderCurrency.Exchange_Rate;
             receiverAccount.Account_Balance += baseAmount / receiverCurrency.Exchange_Rate;
 
-            transfer.Amount = baseAmount / receiverCurrency.Exchange_Rate;
+            transfer.Amount = Math.Round(baseAmount / receiverCurrency.Exchange_Rate);
 
             var transferId = context.Transfers
             .OrderByDescending(x => x.Id_Transfer).FirstOrDefault();
